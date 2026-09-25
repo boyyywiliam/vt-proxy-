@@ -3404,7 +3404,8 @@
             const attr = document.documentElement.dataset.apiBase;
             let stored = null;
             try { stored = localStorage.getItem('vtApiBase'); } catch (e) { /* storage diblokir */ }
-            return String(attr || stored || 'http://localhost:8000').trim().replace(/\/+$/, '');
+            const defaultUrl = (window.location.protocol && window.location.protocol.startsWith('http')) ? window.location.origin : 'http://localhost:8000';
+            return String(attr || stored || defaultUrl).trim().replace(/\/+$/, '');
         })();
 
         const REFRESH_MS = 60000;

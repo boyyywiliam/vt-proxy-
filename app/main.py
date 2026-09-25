@@ -44,7 +44,17 @@ def shutdown():
     stop_scheduler()
     print("[SHUTDOWN] Scheduler stopped!")
 
+from fastapi.responses import FileResponse
+import os
+
 # ========== ENDPOINTS ==========
+@app.get("/ui")
+def serve_ui():
+    ui_path = os.path.join(os.path.dirname(__file__), "..", "dashboard.html")
+    if os.path.exists(ui_path):
+        return FileResponse(ui_path)
+    return {"error": "dashboard.html not found"}
+
 @app.get("/")
 def root():
     return {
