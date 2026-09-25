@@ -25,7 +25,6 @@ set -euo pipefail
 # URL repo GitHub kamu
 # Contoh public  : https://github.com/username/vt-proxy.git
 # Contoh private : https://<TOKEN>@github.com/username/vt-proxy.git
-#   -> Buat token di GitHub: Settings -> Developer Settings -> Personal Access Token
 REPO_URL="https://github.com/melonmelonmelon69/vt.git"
 
 # Branch yang akan di-deploy

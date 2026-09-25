@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
-from app.models import VTAPIKey
+from app.models import VTAPIKey, CacheScan
 from app.config import settings
 import datetime
 import logging
@@ -10,10 +10,7 @@ logger = logging.getLogger(__name__)
 
 def refresh_api_keys():
     """
-    Auto-refresh API key pool
-    - Reset error flag untuk key yang error (mungkin udah pulih)
-    - Tambah key baru dari master source (manual input nanti)
-    - Nonaktifkan key yang expired
+    Auto-refresh API key pool & cleanup expired cache (> 7 hari / 1 minggu)
     """
     db = SessionLocal()
     try:
@@ -36,10 +33,16 @@ def refresh_api_keys():
             VTAPIKey.expires_at != None,
             VTAPIKey.expires_at < datetime.datetime.now()
         ).update({"is_active": False})
+
+        # 4. Auto-delete cache hasil pindaian yang sudah lebih dari 7 hari (1 minggu)
+        cache_cutoff = datetime.datetime.now() - datetime.timedelta(days=getattr(settings, "CACHE_TTL_DAYS", 7))
+        deleted_caches = db.query(CacheScan).filter(
+            CacheScan.scan_date < cache_cutoff
+        ).delete()
         
         db.commit()
         
-        logger.info(f"[AUTO-REFRESH] Reset {reset_count} keys, deactivated {dead_keys + expired_keys} keys")
+        logger.info(f"[AUTO-REFRESH] Reset {reset_count} keys, deactivated {dead_keys + expired_keys} keys, deleted {deleted_caches} expired caches (>7d)")
         
         # 4. Total key aktif
         total_active = db.query(VTAPIKey).filter(VTAPIKey.is_active == True).count()

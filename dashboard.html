@@ -3765,12 +3765,21 @@
 
         function renderKeys() {
             const st = state.keys;
-            const q = st.q.toLowerCase();
-            const filtered = st.rows.filter(k =>
-                !q || (k.api_key || '').toLowerCase().includes(q)
-                || (k.notes || '').toLowerCase().includes(q)
-                || (k.api_label || '').toLowerCase().includes(q)
-            );
+            const q = st.q.toLowerCase().trim();
+            const filtered = st.rows.filter(k => {
+                if (!q) return true;
+                const statusStr = (k.is_active && !k.is_error) ? 'active aktif' : ((k.is_active && k.is_error) ? 'degraded' : 'inactive nonaktif mati');
+                const verifyStr = k.health_status || 'unknown';
+                const verifyText = verifyStr === 'fresh' ? 'verified valid fresh' : (verifyStr === 'rate_limited' ? 'rate limited valid' : (verifyStr === 'dead' ? 'dead invalid' : 'unknown'));
+
+                return (k.api_key || '').toLowerCase().includes(q)
+                    || (k.notes || '').toLowerCase().includes(q)
+                    || (k.api_label || '').toLowerCase().includes(q)
+                    || (k.api_type || '').toLowerCase().includes(q)
+                    || statusStr.toLowerCase().includes(q)
+                    || verifyStr.toLowerCase().includes(q)
+                    || verifyText.toLowerCase().includes(q);
+            });
             const sorted = sortRows(filtered, st.sort);
             const { slice, pages } = paginate(sorted, st);
 

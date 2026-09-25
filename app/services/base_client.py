@@ -21,8 +21,8 @@ from app.services.key_detector import get_meta
 from app.services.load_balancer import LoadBalancer
 from app.utils.timeutil import now_local
 
-# Umur maksimum cache yang masih dianggap valid (setelah ini, hit API lagi)
-CACHE_TTL_DAYS = 3
+# Umur maksimum cache yang masih dianggap valid (setelah 7 hari / 1 minggu, hit API lagi)
+CACHE_TTL_DAYS = getattr(settings, "CACHE_TTL_DAYS", 7)
 
 # Status per-sumber yang dipakai di aggregated report
 STATUS_OK = "ok"          # API dipanggil, data ketemu

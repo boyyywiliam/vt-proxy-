@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = _env("SECRET_KEY", "supersecretkey")
     VT_API_BASE_URL: str = _env("VT_API_BASE_URL", "https://www.virustotal.com/api/v3")
     AUTO_REFRESH_INTERVAL_DAYS: int = int(_env("AUTO_REFRESH_INTERVAL_DAYS", "3"))
+    CACHE_TTL_DAYS: int = int(_env("CACHE_TTL_DAYS", "7"))  # Default 7 hari (1 minggu)
     LOG_LEVEL: str = _env("LOG_LEVEL", "INFO")
 
     # ===== MULTI-SOURCE THREAT INTELLIGENCE =====
