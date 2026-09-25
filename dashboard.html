@@ -3770,7 +3770,7 @@
                 if (!q) return true;
                 const statusStr = (k.is_active && !k.is_error) ? 'active aktif' : ((k.is_active && k.is_error) ? 'degraded' : 'inactive nonaktif mati');
                 const verifyStr = k.health_status || 'unknown';
-                const verifyText = verifyStr === 'fresh' ? 'verified valid fresh' : (verifyStr === 'rate_limited' ? 'rate limited valid' : (verifyStr === 'dead' ? 'dead invalid' : 'unknown'));
+                const verifyText = (verifyStr === 'fresh' || k.is_active) ? 'verified valid fresh' : 'unverified invalid';
 
                 return (k.api_key || '').toLowerCase().includes(q)
                     || (k.notes || '').toLowerCase().includes(q)

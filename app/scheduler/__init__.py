@@ -9,11 +9,11 @@ scheduler = BackgroundScheduler()
 def start_scheduler():
     """Start scheduler untuk auto-refresh"""
     
-    # Jadwalkan refresh tiap 3 hari jam 3 pagi
+    # Jadwalkan refresh rutin tiap 1 hari (biar yang udah lewat 7 hari lgsg kehapus)
     scheduler.add_job(
         func=refresh_api_keys,
         trigger="interval",
-        days=3,
+        days=1,
         id="refresh_keys",
         name="Refresh API Keys",
         replace_existing=True
