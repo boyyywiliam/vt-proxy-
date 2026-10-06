@@ -25,7 +25,7 @@ set -euo pipefail
 # URL repo GitHub kamu
 # Contoh public  : https://github.com/username/vt-proxy.git
 # Contoh private : https://<TOKEN>@github.com/username/vt-proxy.git
-REPO_URL="https://github.com/melonmelonmelon69/vt.git"
+REPO_URL="https://github.com/dailam008/METOPEN-TA-.git"
 
 # Branch yang akan di-deploy
 BRANCH="main"
