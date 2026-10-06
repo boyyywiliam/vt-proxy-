@@ -1,6 +1,6 @@
-from fastapi import FastAPI, Depends, Cookie, Request
+from fastapi import FastAPI, Depends, Cookie
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, RedirectResponse, JSONResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from typing import Optional
 from app.database import get_db, init_db, SessionLocal
@@ -23,10 +23,11 @@ app = FastAPI(
 )
 
 # ========== CORS ==========
+# allow_credentials=True wajib biar browser boleh kirim cookie HttpOnly ke server.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=False,   # harus False jika allow_origins=["*"]
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

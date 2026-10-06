@@ -4,8 +4,8 @@ Auth router: /auth/login, /auth/logout, /auth/me, /login (serve halaman login)
 from fastapi import APIRouter, Depends, Form, HTTPException, Response, Cookie
 from fastapi.responses import FileResponse, RedirectResponse
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import func
 from typing import Optional
+import datetime
 from app.database import get_db
 from app.models.user import User
 from app.utils.auth import verify_password, create_access_token, decode_access_token
@@ -36,7 +36,7 @@ def login(
         raise HTTPException(status_code=401, detail="Username atau password salah.")
 
     # Update last_login
-    user.last_login = func.now()
+    user.last_login = datetime.datetime.now()
     db.commit()
 
     token = create_access_token(data={"sub": user.username, "name": user.full_name})
