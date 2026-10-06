@@ -2923,6 +2923,17 @@
                     <span class="bc-label">Endpoint</span>
                     <span class="bc-value" id="endpointLabel">–</span>
                 </div>
+                <a href="/auth/logout" id="btnLogout" title="Keluar dari sesi" style="
+                    display:flex; align-items:center; gap:8px;
+                    margin-top:8px; padding:9px 12px;
+                    background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.2);
+                    border-radius:8px; color:#f87171; font-size:.75rem; font-weight:600;
+                    text-decoration:none; transition:background .2s;
+                " onmouseover="this.style.background='rgba(239,68,68,.16)'" onmouseout="this.style.background='rgba(239,68,68,.08)'">
+                    <i class="bi bi-box-arrow-left"></i>
+                    Logout
+                    <span id="sidebarUsername" style="margin-left:auto; color:var(--ink-3); font-weight:400;"></span>
+                </a>
             </div>
         </aside>
 
@@ -2947,6 +2958,9 @@
                     <button class="btn btn-ghost btn-sm" id="refreshAll" title="Muat ulang semua data">
                         <i class="bi bi-arrow-clockwise"></i> <span class="btn-label">Refresh</span>
                     </button>
+                    <a href="/auth/logout" class="btn btn-ghost btn-sm" title="Keluar" style="color:#f87171; border:1px solid rgba(239,68,68,.25);">
+                        <i class="bi bi-box-arrow-right"></i> <span class="btn-label" id="topbarUsername"></span>
+                    </a>
                 </div>
             </header>
 
@@ -5648,6 +5662,23 @@
             loadCache();
             loadStats();
             pingHealth();
+
+            // ── Tampilkan username login & handle 401 (session habis) ──
+            (async () => {
+                try {
+                    const r = await fetch('/auth/me', { credentials: 'include' });
+                    if (r.status === 401) {
+                        window.location.href = '/login';
+                        return;
+                    }
+                    const d = await r.json();
+                    const name = d.username || '';
+                    const el2 = document.getElementById('sidebarUsername');
+                    const el3 = document.getElementById('topbarUsername');
+                    if (el2) el2.textContent = name;
+                    if (el3) el3.textContent = name;
+                } catch(e) { /* offline, skip */ }
+            })();
 
             tick();
             setInterval(tick, 1000);
