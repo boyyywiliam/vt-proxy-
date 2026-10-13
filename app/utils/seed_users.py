@@ -9,11 +9,13 @@ from app.utils.auth import hash_password
 logger = logging.getLogger(__name__)
 
 MTM_USERS = [
-    {"username": "Attalarik", "full_name": "Attalarik", "password": "attalarik@2026"},
+    {"username": "Atalarik",  "full_name": "Atalarik",  "password": "atalarik@2026"},
     {"username": "Dailam",    "full_name": "Dailam",    "password": "dailam@2026"},
     {"username": "Rafky",     "full_name": "Rafky",     "password": "rafky@2026"},
     {"username": "Farandio",  "full_name": "Farandio",  "password": "farandio@2026"},
-    {"username": "Jefri",     "full_name": "Jefri",     "password": "jefri@2026"},
+    {"username": "Jeffri",    "full_name": "Jeffri",    "password": "jeffri@2026"},
+    {"username": "Mahrus",    "full_name": "Mahrus",    "password": "mahrus@2026"},
+    {"username": "Ilham",     "full_name": "Ilham",     "password": "ilham@2026"},
 ]
 
 
