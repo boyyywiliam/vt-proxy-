@@ -5098,6 +5098,9 @@
                 </ul>
             </div>`;
 
+            const stats = attrs && attrs.last_analysis_stats;
+            const donutHtml = stats ? (buildVTDonut(stats) || '') : '';
+
             return `
             <div class="analysis-box vd-${vd}">
                 <div class="analysis-header">
@@ -5105,6 +5108,7 @@
                     ${verdictBadge(vd)}
                 </div>
                 ${socHtml}
+                ${donutHtml}
                 <div class="analysis-grid">${gridHtml}</div>
                 ${detectHtml}${ttpHtml}${ctxHtml}${sandboxHtml}${votesHtml}
             </div>`;
@@ -6014,38 +6018,43 @@
                 if (!canvas) return;
                 // Destroy instance lama jika ada (re-render)
                 if (donutRegistry[canvasId]) { donutRegistry[canvasId].destroy(); }
-                donutRegistry[canvasId] = new Chart(canvas, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Malicious', 'Suspicious', 'Undetected', 'Harmless', 'Timeout'],
-                        datasets: [{
-                            data: [mal, sus, und, hrm, tout],
-                            backgroundColor: [
-                                'rgba(208,59,59,.9)',
-                                'rgba(250,178,25,.9)',
-                                'rgba(92,107,135,.6)',
-                                'rgba(12,163,12,.75)',
-                                'rgba(92,107,135,.35)',
-                            ],
-                            borderColor: 'transparent',
-                            borderWidth: 0,
-                            hoverOffset: 4,
-                        }],
-                    },
-                    options: {
-                        cutout: '70%',
-                        responsive: false,
-                        animation: { duration: 600 },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: ctx => ` ${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`,
+                if (typeof Chart === 'undefined') return;
+                try {
+                    donutRegistry[canvasId] = new Chart(canvas, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Malicious', 'Suspicious', 'Undetected', 'Harmless', 'Timeout'],
+                            datasets: [{
+                                data: [mal, sus, und, hrm, tout],
+                                backgroundColor: [
+                                    'rgba(208,59,59,.9)',
+                                    'rgba(250,178,25,.9)',
+                                    'rgba(92,107,135,.6)',
+                                    'rgba(12,163,12,.75)',
+                                    'rgba(92,107,135,.35)',
+                                ],
+                                borderColor: 'transparent',
+                                borderWidth: 0,
+                                hoverOffset: 4,
+                            }],
+                        },
+                        options: {
+                            cutout: '70%',
+                            responsive: false,
+                            animation: { duration: 600 },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: ctx => ` ${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`,
+                                    },
                                 },
                             },
                         },
-                    },
-                });
+                    });
+                } catch (e) {
+                    console.warn('Chart render error:', e);
+                }
             });
 
             const pct = v => total > 0 ? ((v/total)*100).toFixed(0) + '%' : '0%';
@@ -6066,19 +6075,6 @@
                     </div>
                 </div>
             </div>`;
-        }
-
-        /* Patch buildScanResultCard untuk inject donut chart di source box VirusTotal */
-        const _origBuildAnalysisBox = buildAnalysisBox;
-        function buildAnalysisBox(analysis, raw) {
-            const html = _origBuildAnalysisBox(analysis, raw);
-            const attrs = vtAttrs(raw);
-            const stats = attrs && attrs.last_analysis_stats;
-            if (!stats) return html;
-            const donut = buildVTDonut(stats);
-            if (!donut) return html;
-            // Inject donut sebelum analysis-grid
-            return html.replace('<div class="analysis-grid">', donut + '<div class="analysis-grid">');
         }
     </script>
 
