@@ -45,19 +45,24 @@ def clean_indicator(raw: str) -> str:
     Normalisasi & refang IOC indicator:
     - Bersihkan whitespace, petik, kurung sudut.
     - Refang karakter yang biasa didefang oleh SOC analyst (misal: google[.]com -> google.com, hxxps:// -> https://).
+    CATATAN: () tidak distrip karena bisa menjadi bagian legitimate URL.
     """
-    v = (raw or "").strip().strip("\"'<>[]()")
+    v = (raw or "").strip().strip("\"'<>")
     if not v:
         return ""
-    # Refang dot
+    # Refang dot  [.] (.) {.}
     v = re.sub(r"\[\.\]|\(\.\)|\{\.\}", ".", v)
-    # Refang colon
+    # Refang colon  [:] (:)
     v = re.sub(r"\[:\]|\(:\)", ":", v)
-    # Refang scheme
+    # Refang scheme  hxxp:// hXXps://
     v = re.sub(r"^h[xX]{2}p://", "http://", v)
     v = re.sub(r"^h[xX]{2}ps://", "https://", v)
-    # Refang email
-    v = re.sub(r"\[at\]", "@", v, flags=re.IGNORECASE)
+    # Refang email  [at] (at)
+    v = re.sub(r"\[at\]|\(at\)", "@", v, flags=re.IGNORECASE)
+    # Strip sisa kurung kotak di sekitar indicator jika tidak ada konten URL
+    # (misal [192.168.1.1] -> 192.168.1.1, tapi jangan strip kalau sudah ada ://)
+    if "://" not in v:
+        v = v.strip("[]")
     return v
 
 
@@ -95,7 +100,7 @@ def detect_input_type(raw: str) -> str:
     if ":" in v_clean:
         try:
             import ipaddress
-            candidate = v_clean.split("]:")[0].strip("[") if "]:" in v else v_clean
+            candidate = v_clean.split("]:")[0].strip("[") if "]:" in v_clean else v_clean
             if ipaddress.ip_address(candidate).version == 6:
                 return "ip"
         except (ValueError, Exception):

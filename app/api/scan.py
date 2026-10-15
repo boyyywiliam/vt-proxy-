@@ -5,6 +5,7 @@ from app.services.vt_client import VTClient
 from app.services.analyzer import analyze
 from app.services.aggregator import (
     INPUT_TYPE_LABELS, detect_input_type, routing_plan, run_multi_scan,
+    clean_indicator,
 )
 from pydantic import BaseModel
 from typing import List, Optional
@@ -31,6 +32,11 @@ class MultiScanRequest(BaseModel):
     input: str
     # Isi kalau mau paksa tipe tertentu (hash/url/ip/domain/email)
     input_type: Optional[str] = None
+
+
+class BulkMultiScanRequest(BaseModel):
+    """Bulk scan dengan smart routing multi-source per item."""
+    items: List[str]
 
 
 def _wrap(raw: dict) -> dict:
@@ -134,70 +140,131 @@ def scan_domain(request: DomainScanRequest, db: Session = Depends(get_db)):
 # BULK SCAN ENDPOINTS
 # ================================================================
 
-@router.post("/bulk/hash")
-def bulk_scan_hash(request: BulkScanRequest, db: Session = Depends(get_db)):
-    """Bulk scan banyak hash sekaligus (pake load balancer + cache + analisa)"""
-    client = VTClient(db)
+@router.post("/bulk/multi")
+def bulk_scan_multi(request: BulkMultiScanRequest, db: Session = Depends(get_db)):
+    """
+    Bulk scan multi-source dengan smart routing — ENDPOINT UTAMA BULK SCAN.
+
+    Tiap item dideteksi tipenya otomatis, lalu semua provider yang relevan
+    dipanggil bersama:
+        IP     → VirusTotal + AbuseIPDB
+        Domain → VirusTotal + URLhaus
+        URL    → VirusTotal + URLhaus
+        Hash   → VirusTotal
+        Email  → MxToolbox
+
+    Ini versi yang benar — bukan single-provider.
+    """
     results = []
-    for item in request.items:
-        item = item.strip()
+    for raw_item in request.items:
+        item = clean_indicator((raw_item or "").strip())
         if not item:
             continue
-        raw = client.scan_hash(item)
-        results.append({
-            "input": item,
-            "status": "error" if "error" in raw else "success",
-            "data": _wrap(raw)
-        })
+        try:
+            result = run_multi_scan(db, item)
+            results.append({
+                "input": item,
+                "input_type": result.get("input_type"),
+                "status": "success",
+                "data": result,
+            })
+        except Exception as e:
+            results.append({
+                "input": item,
+                "status": "error",
+                "error": str(e),
+            })
+    return {"scan_type": "multi", "total": len(results), "results": results}
+
+
+@router.post("/bulk/hash")
+def bulk_scan_hash(request: BulkScanRequest, db: Session = Depends(get_db)):
+    """
+    Bulk scan hash — menggunakan multi-source routing.
+    Hash selalu diarahkan ke VirusTotal (satu-satunya provider yang cek hash).
+    """
+    results = []
+    for raw_item in request.items:
+        item = clean_indicator((raw_item or "").strip())
+        if not item:
+            continue
+        try:
+            result = run_multi_scan(db, item, input_type="hash")
+            results.append({
+                "input": item,
+                "input_type": "hash",
+                "status": "success",
+                "data": result,
+            })
+        except Exception as e:
+            results.append({"input": item, "status": "error", "error": str(e)})
     return {"scan_type": "hash", "total": len(results), "results": results}
+
 
 @router.post("/bulk/url")
 def bulk_scan_url(request: BulkScanRequest, db: Session = Depends(get_db)):
-    """Bulk scan banyak URL sekaligus (pake load balancer + cache + analisa)"""
-    client = VTClient(db)
+    """
+    Bulk scan URL — VirusTotal + URLhaus (multi-source).
+    """
     results = []
-    for item in request.items:
-        item = item.strip()
+    for raw_item in request.items:
+        item = clean_indicator((raw_item or "").strip())
         if not item:
             continue
-        raw = client.scan_url(item)
-        results.append({
-            "input": item,
-            "status": "error" if "error" in raw else "success",
-            "data": _wrap(raw)
-        })
+        try:
+            result = run_multi_scan(db, item, input_type="url")
+            results.append({
+                "input": item,
+                "input_type": "url",
+                "status": "success",
+                "data": result,
+            })
+        except Exception as e:
+            results.append({"input": item, "status": "error", "error": str(e)})
     return {"scan_type": "url", "total": len(results), "results": results}
+
 
 @router.post("/bulk/ip")
 def bulk_scan_ip(request: BulkScanRequest, db: Session = Depends(get_db)):
-    """Bulk scan banyak IP sekaligus (pake load balancer + cache + analisa)"""
-    client = VTClient(db)
+    """
+    Bulk scan IP — VirusTotal + AbuseIPDB (multi-source).
+    """
     results = []
-    for item in request.items:
-        item = item.strip()
+    for raw_item in request.items:
+        item = clean_indicator((raw_item or "").strip())
         if not item:
             continue
-        raw = client.scan_ip(item)
-        results.append({
-            "input": item,
-            "status": "error" if "error" in raw else "success",
-            "data": _wrap(raw)
-        })
+        try:
+            result = run_multi_scan(db, item, input_type="ip")
+            results.append({
+                "input": item,
+                "input_type": "ip",
+                "status": "success",
+                "data": result,
+            })
+        except Exception as e:
+            results.append({"input": item, "status": "error", "error": str(e)})
     return {"scan_type": "ip", "total": len(results), "results": results}
+
 
 @router.post("/bulk/domain")
 def bulk_scan_domain(request: BulkScanRequest, db: Session = Depends(get_db)):
-    """Bulk scan banyak domain sekaligus (pake load balancer + cache + analisa)"""
-    client = VTClient(db)
+    """
+    Bulk scan domain — VirusTotal + URLhaus (multi-source).
+    """
     results = []
-    for item in request.items:
-        item = item.strip()
+    for raw_item in request.items:
+        item = clean_indicator((raw_item or "").strip())
         if not item:
             continue
-        raw = client.scan_domain(item)
-        results.append({
-            "input": item,
-            "status": "error" if "error" in raw else "success",
-            "data": _wrap(raw)
-        })
+        try:
+            result = run_multi_scan(db, item, input_type="domain")
+            results.append({
+                "input": item,
+                "input_type": "domain",
+                "status": "success",
+                "data": result,
+            })
+        except Exception as e:
+            results.append({"input": item, "status": "error", "error": str(e)})
     return {"scan_type": "domain", "total": len(results), "results": results}
