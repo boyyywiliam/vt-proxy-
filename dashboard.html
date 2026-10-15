@@ -2579,28 +2579,29 @@
         }
 
         .bulk-grid-table thead tr {
-            border-bottom: 1px solid var(--border);
+            border-bottom: 2px solid var(--border-strong);
+            background: var(--surface-1);
         }
 
         .bulk-grid-table thead th {
-            padding: 8px 12px;
+            padding: 11px 16px;
             text-align: left;
             font-size: .68rem;
             font-weight: 700;
-            letter-spacing: .07em;
+            letter-spacing: .08em;
             text-transform: uppercase;
-            color: var(--ink-4);
+            color: var(--ink-3);
             white-space: nowrap;
         }
 
         .bulk-row-main {
             cursor: pointer;
-            transition: background var(--t);
+            transition: all var(--t);
             border-bottom: 1px solid var(--border);
         }
 
         .bulk-row-main:hover {
-            background: var(--surface-2);
+            background: rgba(34, 211, 238, 0.04);
         }
 
         .bulk-row-main.is-expanded {
@@ -2609,7 +2610,7 @@
         }
 
         .bulk-row-main td {
-            padding: 8px 12px;
+            padding: 12px 16px;
             vertical-align: middle;
         }
 
@@ -2623,13 +2624,47 @@
         }
 
         .bulk-row-detail td {
-            padding: 16px 20px;
+            padding: 14px 18px 24px;
             background: var(--surface-2);
         }
 
+        .bulk-detail-card {
+            background: var(--surface-1);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--r3);
+            padding: var(--s4) var(--s5);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, .3);
+        }
+
+        .bulk-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .72rem;
+            padding: 4px 12px;
+            border-radius: var(--r-pill);
+            background: var(--surface-3);
+            color: var(--ink-2);
+            border: 1px solid var(--border);
+            transition: all var(--t);
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .bulk-row-main:hover .bulk-toggle-btn {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .bulk-row-main.is-expanded .bulk-toggle-btn {
+            background: var(--accent);
+            color: #060a12;
+            font-weight: 700;
+            border-color: var(--accent);
+        }
+
         .bulk-row-expand-icon {
-            color: var(--ink-4);
-            font-size: .78rem;
+            font-size: .75rem;
             transition: transform var(--t);
         }
 
@@ -2639,11 +2674,10 @@
 
         .bulk-input-mono {
             font-family: var(--mono);
-            font-size: .73rem;
+            font-size: .78rem;
             color: #b9cdf0;
             word-break: break-all;
-            max-width: 220px;
-            display: block;
+            display: inline-block;
         }
 
         .bulk-mini {
@@ -3503,65 +3537,60 @@
 
                 <!-- ============ VIEW: BULK ============ -->
                 <section class="view" id="view-bulk">
-                    <div class="row g-3">
-                        <div class="col-xl-5">
-                            <div class="card card-accent">
-                                <div class="card-header">
-                                    <span class="ch-title"><i class="bi bi-collection"></i>Bulk Input</span>
+                    <!-- Card 1: Input Panel (Full Width) -->
+                    <div class="card card-accent mb-4">
+                        <div class="card-header">
+                            <span class="ch-title"><i class="bi bi-collection"></i>Bulk Input IOC</span>
+                            <div class="ch-actions">
+                                <span class="pill pill-count" id="bulkInputCount"><i class="bi bi-hash"></i> 0 item terdeteksi</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 align-items-stretch">
+                                <div class="col-lg-9">
+                                    <label class="field-label" for="bulkInput">Daftar Indikator (IP, Domain, URL, Hash — pisahkan per baris atau koma)</label>
+                                    <textarea class="bulk-textarea" id="bulkInput" rows="4" style="min-height:96px;resize:vertical;"
+                                        placeholder="23.227.283.246&#10;api.office-updates.org&#10;8.8.8.8&#10;google.com&#10;44d88612fea8a8f36de82e1278abb02f"></textarea>
                                 </div>
-                                <div class="card-body">
-                                    <div class="banner banner-info mb-4">
-                                        <i class="bi bi-info-circle"></i>
-                                        <span>Masukkan beberapa IP, domain, URL, atau hash (pisahkan dengan baris baru atau koma). Tipe akan dideteksi secara otomatis.</span>
-                                    </div>
-
-                                    <label class="field-label" for="bulkInput">Input Data</label>
-                                    <textarea class="bulk-textarea" id="bulkInput" rows="9"
-                                        placeholder="44d88612fea8a8f36de82e1278abb02f&#10;https://example.com&#10;8.8.8.8&#10;google.com"></textarea>
-                                    <div class="bulk-meta">
-                                        <i class="bi bi-hash"></i><span id="bulkInputCount">0 item terdeteksi</span>
-                                    </div>
-
-                                    <button class="btn btn-primary w-100 mt-4" id="bulkScanBtn">
+                                <div class="col-lg-3 d-flex flex-column justify-content-end gap-2">
+                                    <button class="btn btn-primary w-100" id="bulkScanBtn" style="padding:12px 18px;font-weight:700;">
                                         <i class="bi bi-play-fill"></i> Mulai Bulk Scan
+                                    </button>
+                                    <button class="btn btn-ghost btn-sm w-100" id="bulkClearBtn" type="button">
+                                        <i class="bi bi-trash3"></i> Kosongkan Input
                                     </button>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="col-xl-7">
-                            <div class="card">
-                                <div class="card-header">
-                                    <span class="ch-title"><i class="bi bi-list-check"></i>Bulk Results</span>
-                                    <div class="ch-actions counter-row" id="bulkCounter" hidden>
-                                        <span class="pill pill-count"><i class="bi bi-hash"></i> <span
-                                                id="bulkTotal">0</span></span>
-                                        <span class="pill pill-ok"><span class="pdot"></span><span
-                                                id="bulkSuccess">0</span> ok</span>
-                                        <span class="pill pill-crit"><span class="pdot"></span><span
-                                                id="bulkError">0</span> gagal</span>
-                                        <button class="btn btn-ghost btn-sm" id="exportBulk"
-                                            title="Unduh hasil bulk sebagai JSON">
-                                            <i class="bi bi-download"></i> JSON
-                                        </button>
-                                    </div>
+                    <!-- Card 2: Results Table (Full Width) -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="ch-title"><i class="bi bi-list-check"></i>Bulk Scan Results</span>
+                            <div class="ch-actions counter-row" id="bulkCounter" hidden>
+                                <span class="pill pill-count"><i class="bi bi-hash"></i> <span id="bulkTotal">0</span></span>
+                                <span class="pill pill-ok"><span class="pdot"></span><span id="bulkSuccess">0</span> ok</span>
+                                <span class="pill pill-crit"><span class="pdot"></span><span id="bulkError">0</span> gagal</span>
+                                <button class="btn btn-ghost btn-sm" id="exportBulk" title="Unduh hasil bulk sebagai JSON">
+                                    <i class="bi bi-download"></i> JSON
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="progress-wrap" id="bulkProgress" hidden>
+                                <div class="progress-head">
+                                    <span class="ph-label" id="bulkProgressLabel">Scanning…</span>
+                                    <span class="ph-pct" id="bulkProgressPercent">0%</span>
                                 </div>
-                                <div class="card-body">
-                                    <div class="progress-wrap" id="bulkProgress" hidden>
-                                        <div class="progress-head">
-                                            <span class="ph-label" id="bulkProgressLabel">Scanning…</span>
-                                            <span class="ph-pct" id="bulkProgressPercent">0%</span>
-                                        </div>
-                                        <div class="progress-track">
-                                            <div class="progress-fill" id="bulkProgressFill"></div>
-                                        </div>
-                                    </div>
-                                    <div id="bulkResults">
-                                        <div class="empty-state">
-                                            <i class="bi bi-collection"></i>
-                                            <p>Masukkan data di panel kiri lalu klik Mulai Bulk Scan.</p>
-                                        </div>
-                                    </div>
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="bulkProgressFill"></div>
+                                </div>
+                            </div>
+                            <div id="bulkResults">
+                                <div class="empty-state">
+                                    <i class="bi bi-collection"></i>
+                                    <p>Masukkan data di form input di atas, lalu klik <strong>Mulai Bulk Scan</strong>.</p>
                                 </div>
                             </div>
                         </div>
@@ -5633,17 +5662,17 @@
 
             // Build table structure once
             results.innerHTML = `
-                <div class="table-wrap" style="border-radius:var(--r2);overflow:hidden;">
+                <div class="table-wrap" style="border-radius:var(--r2);overflow-x:auto;">
                     <table class="bulk-grid-table" id="bulkGridTable">
                         <thead><tr>
-                            <th style="width:36px;">#</th>
-                            <th>Input</th>
-                            <th style="width:90px;">Type</th>
-                            <th style="width:130px;">Verdict</th>
-                            <th style="width:120px;">Action</th>
-                            <th style="width:80px;text-align:center;">Conf</th>
-                            <th style="width:70px;text-align:center;">Status</th>
-                            <th style="width:36px;"></th>
+                            <th style="width:48px;">#</th>
+                            <th style="min-width:260px;">Input Indicator</th>
+                            <th style="width:120px;">Tipe</th>
+                            <th style="width:140px;">Verdict</th>
+                            <th style="width:150px;">Rekomendasi</th>
+                            <th style="width:100px;text-align:center;">Confidence</th>
+                            <th style="width:90px;text-align:center;">Status</th>
+                            <th style="width:110px;text-align:right;">Aksi</th>
                         </tr></thead>
                         <tbody id="bulkGridBody"></tbody>
                     </table>
@@ -5699,31 +5728,49 @@
 
                 tbody.insertAdjacentHTML('beforeend', `
                     <tr class="bulk-row-main" id="${rowId}" data-det="${detRowId}">
-                        <td style="color:var(--ink-4);font-size:.72rem;">${i + 1}</td>
+                        <td><span class="id-badge">${i + 1}</span></td>
                         <td>
-                            <span class="bulk-input-mono">${escapeHtml(item.length > 60 ? item.slice(0,57)+'…' : item)}</span>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <code class="bulk-input-mono">${escapeHtml(item)}</code>
+                                <button class="btn btn-ghost btn-icon btn-sm" data-copy-text="${escapeHtml(item)}" title="Salin Input" onclick="event.stopPropagation();" style="width:26px;height:26px;padding:0;flex-shrink:0;">
+                                    <i class="bi bi-clipboard" style="font-size:.72rem;"></i>
+                                </button>
+                            </div>
                         </td>
                         <td>${typeChip(detectedType)}</td>
                         <td>${verdictBadge(finalVerdict)}</td>
-                        <td><span class="pill ${recTone}" style="font-size:.7rem;">${escapeHtml(finalRec.length > 16 ? finalRec.slice(0,15)+'…' : finalRec)}</span></td>
+                        <td><span class="pill ${recTone}" style="font-size:.72rem;"><i class="bi bi-shield-check"></i> ${escapeHtml(finalRec)}</span></td>
                         <td style="text-align:center;">
-                            <span style="font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums;color:${confColor};">${finalConf}%</span>
+                            <div style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;">
+                                <span style="font-size:.82rem;font-weight:700;color:${confColor};">${finalConf}%</span>
+                                <div style="width:44px;height:4px;background:var(--sunken);border-radius:2px;overflow:hidden;">
+                                    <div style="width:${Math.max(finalConf, 4)}%;height:100%;background:${confColor};border-radius:2px;"></div>
+                                </div>
+                            </div>
                         </td>
                         <td style="text-align:center;">
-                            <span class="pill ${status === 'success' ? 'pill-ok' : 'pill-crit'}" style="font-size:.68rem;">
+                            <span class="pill ${status === 'success' ? 'pill-ok' : 'pill-crit'}" style="font-size:.7rem;">
                                 <span class="pdot"></span>${status === 'success' ? 'OK' : 'Gagal'}
                             </span>
                         </td>
-                        <td style="text-align:center;">
-                            <i class="bi bi-chevron-down bulk-row-expand-icon"></i>
+                        <td style="text-align:right;">
+                            <button class="bulk-toggle-btn" type="button" title="Klik untuk lihat detail">
+                                <span>Detail</span>
+                                <i class="bi bi-chevron-down bulk-row-expand-icon"></i>
+                            </button>
                         </td>
                     </tr>
                     <tr class="bulk-row-detail" id="${detRowId}">
-                        <td colspan="8">${detail}</td>
+                        <td colspan="8">
+                            <div class="bulk-detail-card">
+                                ${detail}
+                            </div>
+                        </td>
                     </tr>`);
 
-                // Wire click to expand
-                tbody.querySelector(`#${rowId}`).addEventListener('click', function() {
+                // Wire click to expand (klik baris mana saja atau tombol detail)
+                tbody.querySelector(`#${rowId}`).addEventListener('click', function(e) {
+                    if (e.target.closest('[data-copy-text]')) return;
                     const detRow = el(detRowId);
                     const isOpen = detRow.classList.toggle('is-open');
                     this.classList.toggle('is-expanded', isOpen);
@@ -5794,6 +5841,12 @@
         el('scanBtn').addEventListener('click', doScan);
         el('scanInput').addEventListener('keydown', e => { if (e.key === 'Enter') doScan(); });
         el('bulkScanBtn').addEventListener('click', doBulkScan);
+        el('bulkClearBtn')?.addEventListener('click', () => {
+            el('bulkInput').value = '';
+            updateBulkCount();
+            el('bulkInput').focus();
+            toast('Input bulk dikosongkan.', 'info', 1500);
+        });
 
         el('addKeyBtn').addEventListener('click', addKey);
         el('testKeyBtn').addEventListener('click', testKey);
