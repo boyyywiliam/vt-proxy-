@@ -205,6 +205,26 @@ class BaseThreatClient:
                         "http_status": 404,
                     }
 
+                elif response.status_code == 400:
+                    # 400 = Bad Request / Format input tidak valid untuk endpoint provider ini.
+                    # Ini kesalahan client/input, BUKAN kesalahan API key!
+                    # Jangan mark_error pada key dan jangan loop key lain di pool.
+                    err_msg = "Format input tidak valid untuk provider ini"
+                    try:
+                        err_json = response.json()
+                        if "error" in err_json:
+                            if isinstance(err_json["error"], dict):
+                                err_msg = err_json["error"].get("message", err_msg)
+                            else:
+                                err_msg = str(err_json["error"])
+                    except Exception:
+                        pass
+                    return {
+                        "error": f"{self.meta['label']}: {err_msg}",
+                        "error_kind": STATUS_ERROR,
+                        "http_status": 400,
+                    }
+
                 else:
                     last_error = f"{self.meta['label']} HTTP {response.status_code}"
                     # 405 = method/endpoint salah — bukan masalah key, stop langsung

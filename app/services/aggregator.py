@@ -26,9 +26,10 @@ from app.utils.timeutil import now_local
 # ============================================================
 _RE_EMAIL = re.compile(r"^[^@\s]+@[A-Za-z0-9]([A-Za-z0-9\-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9\-]{0,61}[A-Za-z0-9])?)+$")
 _RE_URL = re.compile(r"^https?://", re.I)
-_RE_IPV4 = re.compile(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$")
+_RE_IPV4_LIKE = re.compile(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?::\d+)?$")
 _RE_HASH = re.compile(r"^[0-9a-fA-F]{32}$|^[0-9a-fA-F]{40}$|^[0-9a-fA-F]{64}$")
-_RE_DOMAIN = re.compile(r"^[A-Za-z0-9]([A-Za-z0-9\-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9\-]{0,61}[A-Za-z0-9])?)+$")
+# Domain WAJIB berakhiran TLD alfabetik (bukan angka murni) dan minimal 2 karakter TLD
+_RE_DOMAIN = re.compile(r"^(?:[A-Za-z0-9](?:[A-Za-z0-9\-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,}(?::\d+)?$")
 
 INPUT_TYPE_LABELS = {
     "hash": "File Hash",
@@ -39,34 +40,78 @@ INPUT_TYPE_LABELS = {
 }
 
 
+def clean_indicator(raw: str) -> str:
+    """
+    Normalisasi & refang IOC indicator:
+    - Bersihkan whitespace, petik, kurung sudut.
+    - Refang karakter yang biasa didefang oleh SOC analyst (misal: google[.]com -> google.com, hxxps:// -> https://).
+    """
+    v = (raw or "").strip().strip("\"'<>[]()")
+    if not v:
+        return ""
+    # Refang dot
+    v = re.sub(r"\[\.\]|\(\.\)|\{\.\}", ".", v)
+    # Refang colon
+    v = re.sub(r"\[:\]|\(:\)", ":", v)
+    # Refang scheme
+    v = re.sub(r"^h[xX]{2}p://", "http://", v)
+    v = re.sub(r"^h[xX]{2}ps://", "https://", v)
+    # Refang email
+    v = re.sub(r"\[at\]", "@", v, flags=re.IGNORECASE)
+    return v
+
+
 def detect_input_type(raw: str) -> str:
     """
-    Deteksi tipe input. Urutannya sengaja: email dan URL dicek duluan karena
-    keduanya bisa nyerempet pola domain.
+    Deteksi tipe input secara cerdas:
+    1. Refang & bersihkan format umum (google[.]com, hxxps://)
+    2. Email
+    3. URL dengan skema
+    4. IPv4 format (4 blok angka dengan dot) -> selalu IP, bukan domain!
+    5. IPv6
+    6. File Hash (MD5, SHA1, SHA256)
+    7. URL tanpa skema (mengandung path / atau parameter ?)
+    8. Domain (harus memiliki TLD alfabetik, misal .com, .id, .org)
     """
-    v = (raw or "").strip()
+    v = clean_indicator(raw)
     if not v:
         return None
 
+    # 1. Email
     if _RE_EMAIL.match(v):
         return "email"
 
+    # 2. Explicit URL
     if _RE_URL.match(v):
         return "url"
 
-    m = _RE_IPV4.match(v)
-    if m and all(int(g) <= 255 for g in m.groups()):
+    # 3. IPv4 pattern (4 blok angka dipisah titik, dengan atau tanpa port)
+    # PENTING: Jika 4 blok angka, ini SELALU format IP (tidak boleh lolos ke regex domain!)
+    if _RE_IPV4_LIKE.match(v):
         return "ip"
 
+    # 4. IPv6
+    v_clean = v.strip("[]")
+    if ":" in v_clean:
+        try:
+            import ipaddress
+            candidate = v_clean.split("]:")[0].strip("[") if "]:" in v else v_clean
+            if ipaddress.ip_address(candidate).version == 6:
+                return "ip"
+        except (ValueError, Exception):
+            pass
+
+    # 5. File Hash
     if _RE_HASH.match(v):
         return "hash"
 
-    if _RE_DOMAIN.match(v):
-        return "domain"
-
-    # URL tanpa skema (ada path/query) tetap diperlakukan sebagai URL
+    # 6. Implicit URL (punya path / atau query ?)
     if "/" in v or "?" in v:
         return "url"
+
+    # 7. Domain name
+    if _RE_DOMAIN.match(v):
+        return "domain"
 
     return "hash"
 
@@ -119,8 +164,65 @@ def run_multi_scan(db: Session, identifier: str, input_type: str = None) -> dict
     API yang tidak relevan tetap masuk hasil dengan status 'skipped' supaya
     dashboard bisa menampilkan box-nya (biar keliatan kenapa gak dipanggil).
     """
-    identifier = (identifier or "").strip()
+    raw_input = (identifier or "").strip()
+    identifier = clean_indicator(raw_input)
     input_type = input_type or detect_input_type(identifier)
+
+    # Validasi & normalisasi spesifik per tipe input
+    if input_type == "ip":
+        clean_ip = re.sub(r":\d+$", "", identifier.strip("[]"))
+        m_v4 = _RE_IPV4_LIKE.match(clean_ip)
+        if m_v4:
+            invalid_octets = [g for g in m_v4.groups() if int(g) > 255]
+            if invalid_octets:
+                # Format 4 blok angka tetapi ada angka > 255 (misal 283 > 255)
+                # Tangani langsung tanpa memanggil API pihak ketiga agar tidak membakar key
+                return {
+                    "input": raw_input,
+                    "input_type": "ip",
+                    "input_type_label": "IP Address (Format Invalid)",
+                    "scan_date": now_local().strftime("%Y-%m-%d %H:%M:%S"),
+                    "routed_to": [VIRUSTOTAL, ABUSEIPDB],
+                    "sources": [
+                        {
+                            "source": VIRUSTOTAL,
+                            "label": SOURCE_META[VIRUSTOTAL]["label"],
+                            "emoji": SOURCE_META[VIRUSTOTAL]["emoji"],
+                            "color": SOURCE_META[VIRUSTOTAL]["color"],
+                            "status": "error",
+                            "verdict": "ERROR",
+                            "reason": f"Format IP tidak valid: nilai oktet '{invalid_octets[0]}' melebihi batas 255",
+                        },
+                        {
+                            "source": ABUSEIPDB,
+                            "label": SOURCE_META[ABUSEIPDB]["label"],
+                            "emoji": SOURCE_META[ABUSEIPDB]["emoji"],
+                            "color": SOURCE_META[ABUSEIPDB]["color"],
+                            "status": "error",
+                            "verdict": "ERROR",
+                            "reason": f"Format IP tidak valid: nilai oktet '{invalid_octets[0]}' melebihi batas 255",
+                        },
+                        get_client(URLHAUS, db).skipped(SKIP_REASONS[URLHAUS]),
+                        get_client(MXTOOLBOX, db).skipped(SKIP_REASONS[MXTOOLBOX]),
+                    ],
+                    "final": {
+                        "verdict": "UNKNOWN",
+                        "confidence": 0,
+                        "recommendation": "PERIKSA FORMAT INPUT",
+                        "recommendation_detail": f"Nilai '{raw_input}' bukan alamat IP yang valid karena oktet '{invalid_octets[0]}' melebihi batas IPv4 (0-255). Pastikan tidak ada kesalahan ketik.",
+                        "reason": f"Oktet {invalid_octets[0]} > 255",
+                    },
+                }
+        identifier = clean_ip
+
+    elif input_type == "domain":
+        # Bersihkan port dan trailing slash: google.com:443/ -> google.com
+        identifier = re.sub(r":\d+$", "", identifier.rstrip("/"))
+
+    elif input_type == "url":
+        if not re.match(r"^https?://", identifier, re.I):
+            identifier = "http://" + identifier
+
     targets = sources_for(input_type)
 
     boxes = []
