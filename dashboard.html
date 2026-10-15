@@ -3029,8 +3029,258 @@
         }
 
         /* ============================================================
-           SCAN RESULT — DONUT CHART WRAPPER
+           KEY HEALTH ENHANCED COMPONENT
            ============================================================ */
+        .kh-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .kh-hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(6, 182, 212, 0.03));
+            border: 1px solid rgba(16, 185, 129, 0.22);
+            border-radius: var(--r2);
+            padding: 12px 16px;
+        }
+        .kh-hero-main {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .kh-hero-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #10b981;
+            letter-spacing: -0.5px;
+            font-variant-numeric: tabular-nums;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .kh-hero-sub {
+            font-size: .74rem;
+            color: var(--ink-3);
+        }
+        .kh-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        .kh-stat-box {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--r1);
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            transition: all var(--t);
+        }
+        .kh-stat-box:hover {
+            border-color: var(--border-strong);
+            background: var(--surface-3);
+        }
+        .kh-stat-box-val {
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: var(--ink);
+        }
+        .kh-stat-box-lbl {
+            font-size: .65rem;
+            color: var(--ink-3);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .kh-providers-matrix {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--r2);
+            padding: 10px 14px;
+        }
+        .kh-pm-row {
+            display: grid;
+            grid-template-columns: 125px 1fr 95px 75px;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 0;
+        }
+        .kh-pm-row + .kh-pm-row {
+            border-top: 1px solid var(--border);
+        }
+        .kh-pm-name {
+            font-size: .75rem;
+            font-weight: 600;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .kh-pm-track {
+            height: 6px;
+            background: var(--sunken);
+            border-radius: 999px;
+            overflow: hidden;
+            display: flex;
+        }
+        .kh-pm-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width var(--t-slow);
+        }
+        .kh-pm-count {
+            font-size: .7rem;
+            font-variant-numeric: tabular-nums;
+            color: var(--ink-2);
+            text-align: right;
+        }
+        .kh-pm-badge {
+            text-align: right;
+        }
+        .kh-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 4px;
+            font-size: .72rem;
+            color: var(--ink-3);
+        }
+
+        /* ============================================================
+           LKM TOOLBAR & ENHANCED CONTROLS
+           ============================================================ */
+        .lkm-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface-2);
+        }
+        .lkm-filters-group {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .lkm-filter-btn {
+            border: 1px solid var(--border);
+            background: var(--surface-3);
+            color: var(--ink-3);
+            padding: 3px 9px;
+            border-radius: var(--r1);
+            font-size: .7rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--t);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .lkm-filter-btn:hover {
+            color: var(--ink);
+            border-color: var(--border-strong);
+        }
+        .lkm-filter-btn.active {
+            background: rgba(34, 211, 238, 0.12);
+            border-color: rgba(34, 211, 238, 0.45);
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .lkm-search-box {
+            position: relative;
+            min-width: 190px;
+        }
+        .lkm-search-box i {
+            position: absolute;
+            left: 9px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--ink-4);
+            font-size: .75rem;
+            pointer-events: none;
+        }
+        .lkm-search-input {
+            width: 100%;
+            padding: 4px 8px 4px 26px;
+            background: var(--surface-1);
+            border: 1px solid var(--border);
+            border-radius: var(--r1);
+            color: var(--ink);
+            font-size: .72rem;
+            outline: none;
+            transition: border-color var(--t);
+        }
+        .lkm-search-input:focus {
+            border-color: var(--accent);
+        }
+        .lkm-usage-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        .lkm-usage-bar {
+            width: 44px;
+            height: 5px;
+            background: var(--sunken);
+            border-radius: 999px;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .lkm-usage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #06b6d4, #3b82f6);
+            border-radius: 999px;
+        }
+        .lkm-foot-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            border-top: 1px solid var(--border);
+            font-size: .72rem;
+            color: var(--ink-3);
+            background: var(--surface-2);
+        }
+        .lkm-btn-toggle {
+            padding: 2px 7px;
+            font-size: .65rem;
+            border-radius: var(--r1);
+            border: 1px solid var(--border);
+            background: var(--surface-3);
+            color: var(--ink-2);
+            cursor: pointer;
+            transition: all var(--t);
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .lkm-btn-toggle:hover {
+            border-color: var(--border-strong);
+            color: var(--ink);
+        }
+        .lkm-btn-toggle.is-off {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.35);
+            color: #10b981;
+        }
+        .lkm-btn-toggle.is-active {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.28);
+            color: #ef4444;
+        }
         .scan-donut-wrap {
             display: flex;
             align-items: center;
@@ -3356,22 +3606,62 @@
                                         </button>
                                     </div>
                                 </div>
+                                <!-- LKM Toolbar -->
+                                <div class="lkm-toolbar">
+                                    <div class="lkm-filters-group" id="lkmProviderFilters">
+                                        <button class="lkm-filter-btn active" data-lkm-provider="all">Semua (<span id="lkmCntAll">107</span>)</button>
+                                        <button class="lkm-filter-btn" data-lkm-provider="virustotal">🟢 VirusTotal (<span id="lkmCntVT">50</span>)</button>
+                                        <button class="lkm-filter-btn" data-lkm-provider="abuseipdb">🔵 AbuseIPDB (<span id="lkmCntAbuse">33</span>)</button>
+                                        <button class="lkm-filter-btn" data-lkm-provider="urlhaus">🟡 URLhaus (<span id="lkmCntURL">8</span>)</button>
+                                        <button class="lkm-filter-btn" data-lkm-provider="mxtoolbox">🟣 MxToolbox (<span id="lkmCntMX">16</span>)</button>
+                                    </div>
+                                    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+                                        <div class="lkm-filters-group" id="lkmStatusFilters">
+                                            <button class="lkm-filter-btn active" data-lkm-status="all">Semua</button>
+                                            <button class="lkm-filter-btn" data-lkm-status="active">🟢 Aktif</button>
+                                            <button class="lkm-filter-btn" data-lkm-status="off">🔴 Off</button>
+                                        </div>
+                                        <div class="lkm-search-box">
+                                            <i class="bi bi-search"></i>
+                                            <input type="search" id="lkmSearch" class="lkm-search-input" placeholder="Cari key / notes…">
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="card-body" style="padding:0;">
                                     <div class="table-wrap compact" id="lkmTableWrap">
                                         <table class="dt" id="lkmTable">
                                             <thead><tr>
-                                                <th style="width:160px;">API Key</th>
-                                                <th style="width:140px;">Provider</th>
-                                                <th style="width:120px;">Health</th>
-                                                <th style="width:110px;">Status</th>
-                                                <th style="width:100px;" class="num">Usage</th>
-                                                <th style="width:170px;">Last Used</th>
+                                                <th style="width:150px;">API Key</th>
+                                                <th style="width:130px;">Provider</th>
+                                                <th style="width:115px;">Health</th>
+                                                <th style="width:105px;">Status</th>
+                                                <th style="width:135px;" class="num">Usage</th>
+                                                <th style="width:160px;">Last Used</th>
                                                 <th>Notes</th>
+                                                <th style="width:140px;text-align:right;">Aksi Cepat</th>
                                             </tr></thead>
                                             <tbody id="lkmTbody">
-                                                <tr class="is-empty"><td colspan="7"><i class="bi bi-arrow-repeat spin"></i> Memuat data key…</td></tr>
+                                                <tr class="is-empty"><td colspan="8"><i class="bi bi-arrow-repeat spin"></i> Memuat data key…</td></tr>
                                             </tbody>
                                         </table>
+                                    </div>
+                                </div>
+                                <div class="lkm-foot-bar" id="lkmFootBar">
+                                    <span id="lkmPageInfo">Menampilkan 0–0 dari 0 key</span>
+                                    <div style="display:flex;align-items:center;gap:12px;">
+                                        <div style="display:flex;align-items:center;gap:6px;">
+                                            <span>Baris:</span>
+                                            <select id="lkmPerPage" class="form-select form-select-sm" style="width:auto;padding:2px 24px 2px 8px;font-size:.72rem;">
+                                                <option value="15" selected>15</option>
+                                                <option value="30">30</option>
+                                                <option value="50">50</option>
+                                                <option value="-1">Semua</option>
+                                            </select>
+                                        </div>
+                                        <div style="display:flex;gap:4px;" id="lkmPageBtns">
+                                            <button class="btn btn-ghost btn-sm" id="lkmPrevBtn" title="Halaman sebelumnya" disabled><i class="bi bi-chevron-left"></i></button>
+                                            <button class="btn btn-ghost btn-sm" id="lkmNextBtn" title="Halaman berikutnya" disabled><i class="bi bi-chevron-right"></i></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -4597,47 +4887,187 @@
         /* ============================================================
            RENDER: OVERVIEW
            ============================================================ */
-        const HEALTH_ORDER = [
-            { key: 'fresh', label: 'Fresh', color: 'var(--st-ok)', icon: 'bi-check-circle-fill' },
-            { key: 'rate_limited', label: 'Rate Limited', color: 'var(--st-warn)', icon: 'bi-hourglass-split' },
-            { key: 'dead', label: 'Dead', color: 'var(--st-crit)', icon: 'bi-x-octagon-fill' },
-            { key: 'unknown', label: 'Unknown', color: 'var(--st-none)', icon: 'bi-question-circle-fill' },
+        const HEALTH_SEGMENTS = [
+            { key: 'active_fresh', label: 'Active Fresh', color: '#10b981', icon: 'bi-check-circle-fill' },
+            { key: 'disabled',     label: 'Disabled (Off)', color: '#64748b', icon: 'bi-power' },
+            { key: 'rate_limited', label: 'Rate Limited', color: '#f59e0b', icon: 'bi-hourglass-split' },
+            { key: 'dead',         label: 'Dead / Error', color: '#ef4444', icon: 'bi-x-octagon-fill' },
+            { key: 'unknown',      label: 'Unknown',      color: '#475569', icon: 'bi-question-circle-fill' },
         ];
 
         function renderHealthMeter() {
-            const rows = state.keys.rows;
+            const rows = state.keys.rows || [];
             const total = rows.length;
-            const counts = { fresh: 0, rate_limited: 0, dead: 0, unknown: 0 };
-            rows.forEach(k => {
-                const s = k.health_status;
-                if (counts[s] === undefined) counts.unknown++; else counts[s]++;
-            });
-
-            el('healthTotal').textContent = `${total} key`;
 
             if (total === 0) {
+                if (el('healthTotal')) el('healthTotal').textContent = '0 key';
                 el('healthMeter').innerHTML = `<div class="empty-state"><i class="bi bi-heart-pulse"></i><p>Belum ada key untuk dinilai.</p></div>`;
                 return;
             }
 
-            const segs = HEALTH_ORDER.filter(h => counts[h.key] > 0).map(h => {
+            // Hitung status dengan sinkronisasi akurat antara is_active dan health_status
+            let activeFresh = 0, disabled = 0, rateLimited = 0, dead = 0, unknown = 0;
+            rows.forEach(k => {
+                if (!k.is_active) {
+                    disabled++;
+                } else if (k.health_status === 'dead' || k.is_error) {
+                    dead++;
+                } else if (k.health_status === 'rate_limited') {
+                    rateLimited++;
+                } else if (k.health_status === 'fresh') {
+                    activeFresh++;
+                } else {
+                    unknown++;
+                }
+            });
+
+            const activeTotal = activeFresh + rateLimited + unknown;
+            const availPct = total > 0 ? ((activeTotal / total) * 100).toFixed(1) : '0';
+
+            if (el('healthTotal')) {
+                el('healthTotal').textContent = `${activeTotal} aktif / ${total} key`;
+            }
+
+            const counts = {
+                active_fresh: activeFresh,
+                disabled: disabled,
+                rate_limited: rateLimited,
+                dead: dead,
+                unknown: unknown,
+            };
+
+            // 1. Meter Segmented Bar
+            const segs = HEALTH_SEGMENTS.filter(h => counts[h.key] > 0).map(h => {
                 const pct = (counts[h.key] / total) * 100;
                 return `<div class="meter-seg" style="width:${pct}%;background:${h.color};"
-                            title="${h.label}: ${counts[h.key]} dari ${total} key (${pct.toFixed(0)}%)"></div>`;
+                            title="${h.label}: ${counts[h.key]} dari ${total} key (${pct.toFixed(1)}%)"></div>`;
             }).join('');
 
-            // Legend selalu menampilkan ikon + label + angka, jadi status tidak pernah
-            // dibawa oleh warna saja.
-            const legend = HEALTH_ORDER.map(h => `
-                <span class="legend-item">
-                    <span class="legend-swatch" style="background:${h.color};"></span>
-                    <i class="bi ${h.icon}" style="color:${h.color};font-size:.78rem;"></i>
-                    ${h.label}
-                    <span class="lg-count">${counts[h.key]}</span>
-                    <span class="lg-pct">${((counts[h.key] / total) * 100).toFixed(0)}%</span>
-                </span>`).join('');
+            // 2. Per-Provider Matrix
+            const PROVIDER_DEFS = [
+                { key: 'virustotal', label: 'VirusTotal', emoji: '🟢', color: '#00cc66' },
+                { key: 'abuseipdb',  label: 'AbuseIPDB',  emoji: '🔵', color: '#3388ff' },
+                { key: 'urlhaus',    label: 'URLhaus',    emoji: '🟡', color: '#ffaa00' },
+                { key: 'mxtoolbox',  label: 'MxToolbox',  emoji: '🟣', color: '#a855f7' },
+            ];
 
-            el('healthMeter').innerHTML = `<div class="meter">${segs}</div><div class="meter-legend">${legend}</div>`;
+            const providerRowsHtml = PROVIDER_DEFS.map(p => {
+                const pKeys = rows.filter(k => (k.api_type || 'virustotal') === p.key);
+                const pTotal = pKeys.length;
+                const pActive = pKeys.filter(k => k.is_active).length;
+                const pPct = pTotal > 0 ? Math.round((pActive / pTotal) * 100) : 0;
+                
+                let badgeClass = 'pill-ok';
+                let badgeText = 'Optimal';
+                if (pTotal === 0) {
+                    badgeClass = 'pill-none';
+                    badgeText = 'Belum Ada';
+                } else if (pActive === 0) {
+                    badgeClass = 'pill-crit';
+                    badgeText = 'Mati / 0';
+                } else if (pPct < 100) {
+                    badgeClass = 'pill-warn';
+                    badgeText = `${pPct}% Ready`;
+                }
+
+                return `
+                <div class="kh-pm-row">
+                    <div class="kh-pm-name">
+                        <span>${p.emoji}</span>
+                        <span>${p.label}</span>
+                    </div>
+                    <div class="kh-pm-track" title="${p.label}: ${pActive} aktif dari ${pTotal} key">
+                        <div class="kh-pm-fill" style="width:${pPct}%;background:${p.color};"></div>
+                    </div>
+                    <div class="kh-pm-count">${pActive}/${pTotal} aktif</div>
+                    <div class="kh-pm-badge">
+                        <span class="pill ${badgeClass}" style="font-size:.65rem;padding:1px 6px;">${badgeText}</span>
+                    </div>
+                </div>`;
+            }).join('');
+
+            // 3. Status hero pill
+            const statusPill = dead === 0 && rateLimited === 0
+                ? `<span class="pill pill-ok" style="font-size:.72rem;"><i class="bi bi-shield-check"></i> Pool Optimal</span>`
+                : dead > 0
+                ? `<span class="pill pill-crit" style="font-size:.72rem;"><i class="bi bi-exclamation-triangle"></i> ${dead} Error</span>`
+                : `<span class="pill pill-warn" style="font-size:.72rem;"><i class="bi bi-hourglass-split"></i> ${rateLimited} Rate Ltd</span>`;
+
+            el('healthMeter').innerHTML = `
+                <div class="kh-container">
+                    <!-- Hero Availability -->
+                    <div class="kh-hero">
+                        <div class="kh-hero-main">
+                            <div class="kh-hero-title">
+                                <span>${availPct}%</span>
+                                <span style="font-size:.78rem;font-weight:500;color:var(--ink-2);">Ketersediaan Pool</span>
+                            </div>
+                            <div class="kh-hero-sub">${activeTotal} dari ${total} key aktif & siap melayani request proxy</div>
+                        </div>
+                        <div>${statusPill}</div>
+                    </div>
+
+                    <!-- Glowing Meter Bar -->
+                    <div>
+                        <div class="meter" style="height:12px;border-radius:999px;">${segs}</div>
+                    </div>
+
+                    <!-- 4 Stat Boxes (Sinkron 100% dengan status live) -->
+                    <div class="kh-stat-grid">
+                        <div class="kh-stat-box" title="Key aktif & status valid">
+                            <div class="kh-stat-box-lbl"><span class="legend-swatch" style="background:#10b981;"></span>Active Fresh</div>
+                            <div class="kh-stat-box-val" style="color:#10b981;">${activeFresh}</div>
+                        </div>
+                        <div class="kh-stat-box" title="Key nonaktif/standby oleh user/admin">
+                            <div class="kh-stat-box-lbl"><span class="legend-swatch" style="background:#64748b;"></span>Disabled (Off)</div>
+                            <div class="kh-stat-box-val" style="color:#94a3b8;">${disabled}</div>
+                        </div>
+                        <div class="kh-stat-box" title="Key aktif tapi sedang limit kuota">
+                            <div class="kh-stat-box-lbl"><span class="legend-swatch" style="background:#f59e0b;"></span>Rate Limited</div>
+                            <div class="kh-stat-box-val" style="color:#f59e0b;">${rateLimited}</div>
+                        </div>
+                        <div class="kh-stat-box" title="Key ditolak oleh provider">
+                            <div class="kh-stat-box-lbl"><span class="legend-swatch" style="background:#ef4444;"></span>Dead / Error</div>
+                            <div class="kh-stat-box-val" style="color:#ef4444;">${dead}</div>
+                        </div>
+                    </div>
+
+                    <!-- Per-Provider Health Matrix (Mengisi ruang kosong secara profesional) -->
+                    <div class="kh-providers-matrix">
+                        <div style="font-size:.72rem;font-weight:600;color:var(--ink-3);margin-bottom:2px;display:flex;justify-content:space-between;">
+                            <span>Kapasitas Per Provider</span>
+                            <span>Failover Ready</span>
+                        </div>
+                        ${providerRowsHtml}
+                    </div>
+
+                    <!-- Footer Action -->
+                    <div class="kh-footer">
+                        <span><i class="bi bi-arrow-repeat spin" id="khSyncSpinner" style="display:none;margin-right:4px;"></i>Failover round-robin aktif otomatis</span>
+                        <button class="btn btn-ghost btn-sm" id="khCheckAllBtn" onclick="healthCheckAllOverview()" style="font-size:.72rem;padding:3px 8px;" title="Tes koneksi live semua key ke masing-masing provider">
+                            <i class="bi bi-broadcast-pin"></i> Test Koneksi Semua
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function healthCheckAllOverview() {
+            const btn = el('khCheckAllBtn');
+            const spinner = el('khSyncSpinner');
+            if (btn) btn.disabled = true;
+            if (spinner) spinner.style.display = 'inline-block';
+            toast('Memulai health check semua key ke masing-masing provider...', 'info', 3000);
+            try {
+                const res = await fetchAPI('/api/keys/health-check-all', 'POST');
+                toast(`Health check selesai: ${res.total || 0} key diuji.`, 'ok', 3500);
+                await Promise.all([loadKeys(), loadStats()]);
+            } catch(e) {
+                toast(`Health check gagal: ${e.message}`, 'err');
+            } finally {
+                if (btn) btn.disabled = false;
+                if (spinner) spinner.style.display = 'none';
+            }
         }
 
         function renderTopKeys() {
@@ -4740,9 +5170,16 @@
                 el('statTotalHits').textContent = fmtNum(data.total_hits || 0);
 
                 const err = data.error_keys || 0;
-                el('statActiveKeysFoot').innerHTML = err > 0
-                    ? `<i class="bi bi-exclamation-triangle" style="color:var(--st-warn);"></i> ${fmtNum(err)} key bertanda error`
-                    : `<i class="bi bi-check2" style="color:var(--st-ok);"></i> semua key sehat`;
+                const totalK = data.total_keys || 0;
+                const activeK = data.active_keys || 0;
+                const offK = totalK - activeK;
+                if (err > 0) {
+                    el('statActiveKeysFoot').innerHTML = `<i class="bi bi-exclamation-triangle" style="color:var(--st-warn);"></i> ${fmtNum(err)} key bertanda error`;
+                } else if (offK > 0) {
+                    el('statActiveKeysFoot').innerHTML = `<i class="bi bi-check2" style="color:var(--st-ok);"></i> ${fmtNum(activeK)} siap · ${fmtNum(offK)} off (standby)`;
+                } else {
+                    el('statActiveKeysFoot').innerHTML = `<i class="bi bi-check2" style="color:var(--st-ok);"></i> 100% pool aktif & sehat`;
+                }
 
                 const cache = data.total_cache || 0, hits = data.total_hits || 0;
                 el('statHitsFoot').textContent = cache > 0
@@ -6031,21 +6468,27 @@
             setInterval(pingHealth, HEALTH_MS);
             setInterval(() => { loadKeys(); loadCache(); loadStats(); }, REFRESH_MS);
 
-            // Live Key Monitor — start polling setelah initial load
+            // Live Key Monitor — start polling setelah initial load (5 detik)
             setTimeout(() => {
                 lkmRender();
-                setInterval(lkmRender, 10000);
-            }, 1500);
+                setInterval(lkmRender, 5000);
+            }, 1000);
         })();
 
         /* ============================================================
-           LIVE KEY MONITOR (LKM)
-           Polling tiap 5 detik dari /api/keys — highlight baris saat
-           last_used berubah (artinya key baru saja dipakai).
+           LIVE KEY MONITOR (LKM) — OPTIMIZED & INTERACTIVE
+           Polling tiap 5 detik dari /api/keys — filter provider, status,
+           pencarian, paginasi, quick toggle & live test ping.
            ============================================================ */
         const lkmState = {
-            prevLastUsed: {},   // {id: last_used_string}
+            prevLastUsed: {},
             initialized: false,
+            filterProvider: 'all',
+            filterStatus: 'all',
+            searchQuery: '',
+            page: 1,
+            perPage: 15,
+            cachedKeys: [],
         };
 
         function maskKey(keyStr) {
@@ -6053,8 +6496,11 @@
             return '•••' + keyStr.slice(-6);
         }
 
-        function lkmHealthPill(status) {
-            switch (status) {
+        function lkmHealthPill(k) {
+            if (!k.is_active) {
+                return `<span class="pill pill-none" style="font-size:.68rem;background:rgba(100,116,139,.12);border-color:rgba(100,116,139,.28);color:#94a3b8;"><span class="pdot" style="background:#64748b;"></span>Disabled</span>`;
+            }
+            switch (k.health_status) {
                 case 'fresh':        return `<span class="pill pill-ok"  style="font-size:.68rem;"><span class="pdot"></span>Fresh</span>`;
                 case 'rate_limited': return `<span class="pill pill-warn" style="font-size:.68rem;"><span class="pdot"></span>Rate&nbsp;Ltd</span>`;
                 case 'dead':         return `<span class="pill pill-crit" style="font-size:.68rem;"><span class="pdot"></span>Dead</span>`;
@@ -6068,30 +6514,66 @@
             return `<span class="pill pill-crit" style="font-size:.68rem;"><span class="pdot"></span>Off</span>`;
         }
 
+        async function toggleKeyFromLKM(id) {
+            try {
+                const res = await fetchAPI(`/api/keys/${id}/toggle`, 'POST');
+                toast(`Key #${id} ${res.message || 'diperbarui'}.`, 'ok', 2000);
+                await Promise.all([loadKeys(), loadStats()]);
+                await lkmRender();
+            } catch(e) {
+                toast(`Gagal mengubah status: ${e.message}`, 'err');
+            }
+        }
+
+        async function pingKeyFromLKM(id) {
+            const btn = document.querySelector(`[data-lkm-ping="${id}"]`);
+            if (btn) { btn.disabled = true; btn.innerHTML = `<i class="bi bi-arrow-repeat spin"></i>`; }
+            try {
+                const data = await fetchAPI(`/api/keys/${id}/health`, 'POST');
+                const kind = data.health_status === 'fresh' ? 'ok' : data.health_status === 'dead' ? 'err' : 'info';
+                toast(data.message || `Status: ${data.health_status}`, kind, 2500);
+                await Promise.all([loadKeys(), loadStats()]);
+                await lkmRender();
+            } catch(e) {
+                toast(`Ping gagal: ${e.message}`, 'err');
+                if (btn) { btn.disabled = false; btn.innerHTML = `<i class="bi bi-broadcast-pin"></i>`; }
+            }
+        }
+
         async function lkmRender() {
             let keys;
             try {
                 keys = await fetchAPI('/api/keys');
+                lkmState.cachedKeys = keys;
             } catch(e) {
-                // Jangan timpa tabel jika request gagal, biarkan data lama
-                return;
+                // Jangan timpa tabel jika request gagal, gunakan cache lokal jika ada
+                if (lkmState.cachedKeys && lkmState.cachedKeys.length > 0) {
+                    keys = lkmState.cachedKeys;
+                } else {
+                    return;
+                }
             }
 
             if (!Array.isArray(keys) || keys.length === 0) {
-                el('lkmTbody').innerHTML = `<tr class="is-empty"><td colspan="7"><i class="bi bi-key"></i> Belum ada API key terdaftar.</td></tr>`;
-                el('lkmTotal').textContent = '0';
+                if (el('lkmTbody')) el('lkmTbody').innerHTML = `<tr class="is-empty"><td colspan="8"><i class="bi bi-key"></i> Belum ada API key terdaftar.</td></tr>`;
+                if (el('lkmTotal')) el('lkmTotal').textContent = '0';
                 return;
             }
 
-            el('lkmTotal').textContent = `${keys.filter(k => k.is_active).length} aktif / ${keys.length}`;
+            const activeKeysCount = keys.filter(k => k.is_active).length;
+            if (el('lkmTotal')) {
+                el('lkmTotal').textContent = `${activeKeysCount} aktif / ${keys.length}`;
+            }
 
-            const tbody = el('lkmTbody');
-            const rows  = tbody.querySelectorAll('tr[data-key-id]');
-            const domMap = {};
-            rows.forEach(r => { domMap[r.dataset.keyId] = r; });
+            // Update badge hitungan di filter toolbar
+            if (el('lkmCntAll'))   el('lkmCntAll').textContent   = keys.length;
+            if (el('lkmCntVT'))    el('lkmCntVT').textContent    = keys.filter(k => (k.api_type || 'virustotal') === 'virustotal').length;
+            if (el('lkmCntAbuse')) el('lkmCntAbuse').textContent = keys.filter(k => k.api_type === 'abuseipdb').length;
+            if (el('lkmCntURL'))   el('lkmCntURL').textContent   = keys.filter(k => k.api_type === 'urlhaus').length;
+            if (el('lkmCntMX'))    el('lkmCntMX').textContent    = keys.filter(k => k.api_type === 'mxtoolbox').length;
 
+            // Tracking perubahan last_used untuk animasi flash
             const hitIds = new Set();
-
             if (lkmState.initialized) {
                 keys.forEach(k => {
                     const prev = lkmState.prevLastUsed[k.id];
@@ -6101,33 +6583,102 @@
                     }
                 });
             }
-
-            // Simpan snapshot baru
             keys.forEach(k => { lkmState.prevLastUsed[k.id] = k.last_used || ''; });
             lkmState.initialized = true;
 
-            // Render rows — update DOM yang sudah ada kalau bisa (avoid full re-render)
-            let newHtml = '';
-            keys.forEach(k => {
-                const masked    = maskKey(k.api_key);
-                const providerChip = apiChip(k.api_type, k.api_label, k.api_emoji, k.api_color);
-                const healthPill   = lkmHealthPill(k.health_status);
-                const statusPill   = lkmStatusPill(k);
-                const lastUsed     = k.last_used ? fmtDateTime(k.last_used) : '<span style="color:var(--ink-4);">—</span>';
-                const notes        = k.notes ? `<span style="color:var(--ink-3);font-size:.75rem;">${escapeHtml(k.notes)}</span>` : '—';
+            // FILTERING
+            let filtered = keys;
 
-                newHtml += `<tr data-key-id="${k.id}">
-                    <td><code style="font-size:.75rem;">${escapeHtml(masked)}</code></td>
-                    <td>${providerChip}</td>
-                    <td>${healthPill}</td>
-                    <td>${statusPill}</td>
-                    <td class="num" style="font-variant-numeric:tabular-nums;">${fmtNum(k.usage_count)}</td>
-                    <td class="dim" style="font-size:.75rem;">${lastUsed}</td>
-                    <td>${notes}</td>
-                </tr>`;
-            });
+            // 1. Filter Provider
+            if (lkmState.filterProvider !== 'all') {
+                filtered = filtered.filter(k => (k.api_type || 'virustotal') === lkmState.filterProvider);
+            }
 
-            tbody.innerHTML = newHtml;
+            // 2. Filter Status
+            if (lkmState.filterStatus === 'active') {
+                filtered = filtered.filter(k => k.is_active);
+            } else if (lkmState.filterStatus === 'off') {
+                filtered = filtered.filter(k => !k.is_active);
+            }
+
+            // 3. Search query
+            const q = (lkmState.searchQuery || '').toLowerCase().trim();
+            if (q) {
+                filtered = filtered.filter(k =>
+                    (k.api_key || '').toLowerCase().includes(q) ||
+                    (k.notes || '').toLowerCase().includes(q) ||
+                    (k.api_label || '').toLowerCase().includes(q)
+                );
+            }
+
+            // PAGINATION
+            const totalFiltered = filtered.length;
+            const perPage = lkmState.perPage === -1 ? totalFiltered : (lkmState.perPage || 15);
+            const totalPages = Math.max(1, Math.ceil(totalFiltered / (perPage || 1)));
+            lkmState.page = Math.min(Math.max(1, lkmState.page), totalPages);
+
+            const start = (lkmState.page - 1) * perPage;
+            const slice = filtered.slice(start, start + perPage);
+
+            // Cari usage maksimum untuk skala bar
+            const maxUsage = Math.max(1, ...keys.map(k => k.usage_count || 0));
+
+            // Render baris tabel
+            const tbody = el('lkmTbody');
+            if (!tbody) return;
+
+            if (slice.length === 0) {
+                tbody.innerHTML = `<tr class="is-empty"><td colspan="8"><i class="bi bi-funnel"></i> Tidak ada key yang sesuai dengan filter.</td></tr>`;
+            } else {
+                tbody.innerHTML = slice.map(k => {
+                    const masked       = maskKey(k.api_key);
+                    const providerChip = apiChip(k.api_type, k.api_label, k.api_emoji, k.api_color);
+                    const healthPill   = lkmHealthPill(k);
+                    const statusPill   = lkmStatusPill(k);
+                    const lastUsed     = k.last_used ? fmtDateTime(k.last_used) : '<span style="color:var(--ink-4);">—</span>';
+                    const notes        = k.notes ? `<span style="color:var(--ink-3);font-size:.75rem;">${escapeHtml(k.notes)}</span>` : '—';
+                    const usageVal     = k.usage_count || 0;
+                    const usagePct     = Math.min(100, Math.max(3, Math.round((usageVal / maxUsage) * 100)));
+
+                    const toggleBtn = k.is_active
+                        ? `<button class="lkm-btn-toggle is-active" onclick="toggleKeyFromLKM(${k.id})" title="Klik untuk menonaktifkan"><i class="bi bi-power"></i> Off</button>`
+                        : `<button class="lkm-btn-toggle is-off" onclick="toggleKeyFromLKM(${k.id})" title="Klik untuk mengaktifkan"><i class="bi bi-power"></i> Aktif</button>`;
+
+                    const pingBtn = `<button class="btn btn-ghost btn-icon btn-sm" data-lkm-ping="${k.id}" onclick="pingKeyFromLKM(${k.id})" title="Ping probe live ke provider"><i class="bi bi-broadcast-pin"></i></button>`;
+
+                    return `<tr data-key-id="${k.id}">
+                        <td>
+                            <code style="font-size:.75rem;">${escapeHtml(masked)}</code>
+                            <button class="btn btn-ghost btn-icon" style="padding:1px 4px;font-size:.68rem;margin-left:4px;" onclick="navigator.clipboard.writeText('${escapeHtml(k.full_key || k.api_key)}'); toast('Key disalin ke clipboard!', 'ok', 1500);" title="Salin key"><i class="bi bi-clipboard"></i></button>
+                        </td>
+                        <td>${providerChip}</td>
+                        <td>${healthPill}</td>
+                        <td>${statusPill}</td>
+                        <td class="num">
+                            <div class="lkm-usage-wrap">
+                                <div class="lkm-usage-bar"><div class="lkm-usage-fill" style="width:${usagePct}%;"></div></div>
+                                <span>${fmtNum(usageVal)}</span>
+                            </div>
+                        </td>
+                        <td class="dim" style="font-size:.74rem;">${lastUsed}</td>
+                        <td>${notes}</td>
+                        <td style="text-align:right;">
+                            <div style="display:inline-flex;gap:4px;align-items:center;">
+                                ${toggleBtn}
+                                ${pingBtn}
+                            </div>
+                        </td>
+                    </tr>`;
+                }).join('');
+            }
+
+            // Update footer pagination
+            if (el('lkmPageInfo')) {
+                const endItem = Math.min(start + perPage, totalFiltered);
+                el('lkmPageInfo').textContent = totalFiltered === 0 ? 'Tidak ada data' : `Menampilkan ${start + 1}–${endItem} dari ${totalFiltered} key`;
+            }
+            if (el('lkmPrevBtn')) el('lkmPrevBtn').disabled = lkmState.page <= 1;
+            if (el('lkmNextBtn')) el('lkmNextBtn').disabled = lkmState.page >= totalPages;
 
             // Trigger flash animation untuk key yang baru saja di-hit
             if (hitIds.size > 0) {
@@ -6135,19 +6686,94 @@
                     const row = tbody.querySelector(`tr[data-key-id="${id}"]`);
                     if (row) {
                         row.classList.remove('lkm-hit');
-                        // Force reflow supaya animasi restart
-                        void row.offsetWidth;
+                        void row.offsetWidth; // Force reflow
                         row.classList.add('lkm-hit');
                         row.addEventListener('animationend', () => row.classList.remove('lkm-hit'), { once: true });
                     }
                 });
-                toast(`⚡ ${hitIds.size} key baru saja dipakai.`, 'info', 2500);
+                toast(`⚡ ${hitIds.size} key baru saja melayani request.`, 'info', 2500);
             }
         }
 
-        el('lkmRefreshBtn').addEventListener('click', () => {
-            lkmRender();
+        // Listener untuk filter LKM
+        document.addEventListener('click', e => {
+            const btnP = e.target.closest('[data-lkm-provider]');
+            if (btnP) {
+                document.querySelectorAll('[data-lkm-provider]').forEach(b => b.classList.remove('active'));
+                btnP.classList.add('active');
+                lkmState.filterProvider = btnP.dataset.lkmProvider;
+                lkmState.page = 1;
+                lkmRender();
+                return;
+            }
+
+            const btnS = e.target.closest('[data-lkm-status]');
+            if (btnS) {
+                document.querySelectorAll('[data-lkm-status]').forEach(b => b.classList.remove('active'));
+                btnS.classList.add('active');
+                lkmState.filterStatus = btnS.dataset.lkmStatus;
+                lkmState.page = 1;
+                lkmRender();
+                return;
+            }
         });
+
+        // Event bindings for LKM controls
+        function bindLkmControls() {
+            const sInput = el('lkmSearch');
+            if (sInput && !sInput._lkmBound) {
+                sInput._lkmBound = true;
+                sInput.addEventListener('input', () => {
+                    lkmState.searchQuery = sInput.value;
+                    lkmState.page = 1;
+                    lkmRender();
+                });
+            }
+
+            const perPageSelect = el('lkmPerPage');
+            if (perPageSelect && !perPageSelect._lkmBound) {
+                perPageSelect._lkmBound = true;
+                perPageSelect.addEventListener('change', () => {
+                    lkmState.perPage = Number(perPageSelect.value);
+                    lkmState.page = 1;
+                    lkmRender();
+                });
+            }
+
+            const prevBtn = el('lkmPrevBtn');
+            if (prevBtn && !prevBtn._lkmBound) {
+                prevBtn._lkmBound = true;
+                prevBtn.addEventListener('click', () => {
+                    if (lkmState.page > 1) {
+                        lkmState.page--;
+                        lkmRender();
+                    }
+                });
+            }
+
+            const nextBtn = el('lkmNextBtn');
+            if (nextBtn && !nextBtn._lkmBound) {
+                nextBtn._lkmBound = true;
+                nextBtn.addEventListener('click', () => {
+                    lkmState.page++;
+                    lkmRender();
+                });
+            }
+
+            const refreshBtn = el('lkmRefreshBtn');
+            if (refreshBtn && !refreshBtn._lkmBound) {
+                refreshBtn._lkmBound = true;
+                refreshBtn.addEventListener('click', () => {
+                    lkmRender();
+                });
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bindLkmControls);
+        } else {
+            bindLkmControls();
+        }
 
         /* ============================================================
            DONUT CHART — INJECTED KE SCAN RESULT VT

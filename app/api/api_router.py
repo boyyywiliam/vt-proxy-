@@ -220,6 +220,24 @@ def api_delete_key(key_id: int, db: Session = Depends(get_db)):
     return {"message": "Key deleted", "id": key_id}
 
 
+@router.post("/keys/{key_id}/toggle")
+def api_toggle_key(key_id: int, db: Session = Depends(get_db)):
+    """Aktifkan atau nonaktifkan API key secara instan."""
+    key = db.query(VTAPIKey).filter(VTAPIKey.id == key_id).first()
+    if not key:
+        raise HTTPException(status_code=404, detail="Key not found")
+    key.is_active = not key.is_active
+    if key.is_active:
+        key.is_error = False
+    db.commit()
+    db.refresh(key)
+    return {
+        "id": key.id,
+        "is_active": key.is_active,
+        "message": f"Key {'diaktifkan' if key.is_active else 'dinonaktifkan'}"
+    }
+
+
 @router.post("/keys/{key_id}/health")
 def api_health_check_key(key_id: int, db: Session = Depends(get_db)):
     """Health check satu key — hemat kuota, pakai probe ke provider aslinya."""
