@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VT Proxy — Console</title>
+    <title>Threat Intelligence MTM — Console</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,6 +13,7 @@
         rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
     <style>
         /* ============================================================
@@ -2873,6 +2874,88 @@
                 max-width: none;
             }
         }
+
+        /* ============================================================
+           LIVE KEY MONITOR (LKM)
+           ============================================================ */
+        @keyframes lkm-flash {
+            0%   { background: rgba(34, 211, 238, 0.22); box-shadow: 0 0 0 1px rgba(34,211,238,.35); }
+            60%  { background: rgba(34, 211, 238, 0.10); }
+            100% { background: transparent; box-shadow: none; }
+        }
+
+        #lkmTable tbody tr.lkm-hit {
+            animation: lkm-flash 1.8s ease-out forwards;
+        }
+
+        #lkmTable tbody tr {
+            transition: background var(--t);
+        }
+
+        .lkm-pulse-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--st-ok);
+            box-shadow: 0 0 0 0 rgba(12,163,12,.5);
+            animation: lkm-pulse 2s infinite;
+        }
+
+        @keyframes lkm-pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(12,163,12,.5); }
+            70%  { box-shadow: 0 0 0 6px rgba(12,163,12,0); }
+            100% { box-shadow: 0 0 0 0 rgba(12,163,12,0); }
+        }
+
+        /* ============================================================
+           SCAN RESULT — DONUT CHART WRAPPER
+           ============================================================ */
+        .scan-donut-wrap {
+            display: flex;
+            align-items: center;
+            gap: var(--s5);
+            padding: var(--s4) var(--s5);
+            background: var(--surface-2);
+            border-radius: var(--r2);
+            border: 1px solid var(--border);
+            margin-bottom: var(--s4);
+        }
+
+        .scan-donut-canvas {
+            flex: 0 0 88px;
+            width: 88px;
+            height: 88px;
+        }
+
+        .scan-donut-legend {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 20px;
+            font-size: .75rem;
+        }
+
+        .sdl-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sdl-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .sdl-count {
+            font-weight: 700;
+            color: var(--ink-2);
+        }
+
+        .sdl-label {
+            color: var(--ink-3);
+        }
     </style>
 </head>
 
@@ -2885,8 +2968,8 @@
             <div class="brand">
                 <div class="brand-mark"><i class="bi bi-shield-lock-fill"></i></div>
                 <div class="brand-text">
-                    <span class="brand-name">VT Proxy</span>
-                    <span class="brand-sub">Console</span>
+                    <span class="brand-name">Threat Intelligence</span>
+                    <span class="brand-sub">MTM</span>
                 </div>
             </div>
 
@@ -3136,6 +3219,45 @@
                             </div>
                         </div>
                     </div>
+                    <!-- ===== LIVE KEY MONITOR ===== -->
+                    <div class="row g-3 mt-0" style="margin-top:0 !important;">
+                        <div class="col-12">
+                            <div class="card" id="liveKeyMonitorCard">
+                                <div class="card-header">
+                                    <span class="ch-title"><i class="bi bi-activity"></i> Live Key Monitor
+                                        <span class="pill pill-count" id="lkmTotal" style="margin-left:8px;">–</span>
+                                    </span>
+                                    <div class="ch-actions">
+                                        <span style="font-size:.72rem;color:var(--ink-3);display:flex;align-items:center;gap:6px;">
+                                            <span class="lkm-pulse-dot"></span> auto-refresh tiap 5 detik
+                                        </span>
+                                        <button class="btn btn-ghost btn-sm" id="lkmRefreshBtn" title="Refresh sekarang">
+                                            <i class="bi bi-arrow-clockwise"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body" style="padding:0;">
+                                    <div class="table-wrap compact" id="lkmTableWrap">
+                                        <table class="dt" id="lkmTable">
+                                            <thead><tr>
+                                                <th style="width:160px;">API Key</th>
+                                                <th style="width:140px;">Provider</th>
+                                                <th style="width:120px;">Health</th>
+                                                <th style="width:110px;">Status</th>
+                                                <th style="width:100px;" class="num">Usage</th>
+                                                <th style="width:170px;">Last Used</th>
+                                                <th>Notes</th>
+                                            </tr></thead>
+                                            <tbody id="lkmTbody">
+                                                <tr class="is-empty"><td colspan="7"><i class="bi bi-arrow-repeat spin"></i> Memuat data key…</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </section>
 
                 <!-- ============ VIEW: KEYS ============ -->
@@ -3392,7 +3514,7 @@
             </main>
 
             <footer class="app-footer">
-                <span class="fx"><i class="bi bi-shield-check"></i> VT Proxy Balancer <strong>v1.0.0</strong></span>
+                <span class="fx"><i class="bi bi-shield-check"></i> Threat Intelligence MTM <strong>v1.0.0</strong></span>
                 <span class="fx"><i class="bi bi-arrow-repeat"></i> Terakhir diperbarui <strong
                         id="footLastUpdate">–</strong></span>
                 <span class="spacer"></span>
@@ -5684,7 +5806,216 @@
             setInterval(tick, 1000);
             setInterval(pingHealth, HEALTH_MS);
             setInterval(() => { loadKeys(); loadCache(); loadStats(); }, REFRESH_MS);
+
+            // Live Key Monitor — start polling setelah initial load
+            setTimeout(() => {
+                lkmRender();
+                setInterval(lkmRender, 5000);
+            }, 1500);
         })();
+
+        /* ============================================================
+           LIVE KEY MONITOR (LKM)
+           Polling tiap 5 detik dari /api/keys — highlight baris saat
+           last_used berubah (artinya key baru saja dipakai).
+           ============================================================ */
+        const lkmState = {
+            prevLastUsed: {},   // {id: last_used_string}
+            initialized: false,
+        };
+
+        function maskKey(keyStr) {
+            if (!keyStr || keyStr.length <= 8) return keyStr || '—';
+            return '•••' + keyStr.slice(-6);
+        }
+
+        function lkmHealthPill(status) {
+            switch (status) {
+                case 'fresh':        return `<span class="pill pill-ok"  style="font-size:.68rem;"><span class="pdot"></span>Fresh</span>`;
+                case 'rate_limited': return `<span class="pill pill-warn" style="font-size:.68rem;"><span class="pdot"></span>Rate&nbsp;Ltd</span>`;
+                case 'dead':         return `<span class="pill pill-crit" style="font-size:.68rem;"><span class="pdot"></span>Dead</span>`;
+                default:             return `<span class="pill pill-none" style="font-size:.68rem;"><span class="pdot"></span>Unknown</span>`;
+            }
+        }
+
+        function lkmStatusPill(k) {
+            if (k.is_active && !k.is_error) return `<span class="pill pill-ok"  style="font-size:.68rem;"><span class="pdot"></span>Active</span>`;
+            if (k.is_active &&  k.is_error) return `<span class="pill pill-warn" style="font-size:.68rem;"><span class="pdot"></span>Error</span>`;
+            return `<span class="pill pill-crit" style="font-size:.68rem;"><span class="pdot"></span>Off</span>`;
+        }
+
+        async function lkmRender() {
+            let keys;
+            try {
+                keys = await fetchAPI('/api/keys');
+            } catch(e) {
+                // Jangan timpa tabel jika request gagal, biarkan data lama
+                return;
+            }
+
+            if (!Array.isArray(keys) || keys.length === 0) {
+                el('lkmTbody').innerHTML = `<tr class="is-empty"><td colspan="7"><i class="bi bi-key"></i> Belum ada API key terdaftar.</td></tr>`;
+                el('lkmTotal').textContent = '0';
+                return;
+            }
+
+            el('lkmTotal').textContent = `${keys.filter(k => k.is_active).length} aktif / ${keys.length}`;
+
+            const tbody = el('lkmTbody');
+            const rows  = tbody.querySelectorAll('tr[data-key-id]');
+            const domMap = {};
+            rows.forEach(r => { domMap[r.dataset.keyId] = r; });
+
+            const hitIds = new Set();
+
+            if (lkmState.initialized) {
+                keys.forEach(k => {
+                    const prev = lkmState.prevLastUsed[k.id];
+                    const cur  = k.last_used || '';
+                    if (prev !== undefined && prev !== cur && cur !== '') {
+                        hitIds.add(k.id);
+                    }
+                });
+            }
+
+            // Simpan snapshot baru
+            keys.forEach(k => { lkmState.prevLastUsed[k.id] = k.last_used || ''; });
+            lkmState.initialized = true;
+
+            // Render rows — update DOM yang sudah ada kalau bisa (avoid full re-render)
+            let newHtml = '';
+            keys.forEach(k => {
+                const masked    = maskKey(k.api_key);
+                const providerChip = apiChip(k.api_type, k.api_label, k.api_emoji, k.api_color);
+                const healthPill   = lkmHealthPill(k.health_status);
+                const statusPill   = lkmStatusPill(k);
+                const lastUsed     = k.last_used ? fmtDateTime(k.last_used) : '<span style="color:var(--ink-4);">—</span>';
+                const notes        = k.notes ? `<span style="color:var(--ink-3);font-size:.75rem;">${escapeHtml(k.notes)}</span>` : '—';
+
+                newHtml += `<tr data-key-id="${k.id}">
+                    <td><code style="font-size:.75rem;">${escapeHtml(masked)}</code></td>
+                    <td>${providerChip}</td>
+                    <td>${healthPill}</td>
+                    <td>${statusPill}</td>
+                    <td class="num" style="font-variant-numeric:tabular-nums;">${fmtNum(k.usage_count)}</td>
+                    <td class="dim" style="font-size:.75rem;">${lastUsed}</td>
+                    <td>${notes}</td>
+                </tr>`;
+            });
+
+            tbody.innerHTML = newHtml;
+
+            // Trigger flash animation untuk key yang baru saja di-hit
+            if (hitIds.size > 0) {
+                hitIds.forEach(id => {
+                    const row = tbody.querySelector(`tr[data-key-id="${id}"]`);
+                    if (row) {
+                        row.classList.remove('lkm-hit');
+                        // Force reflow supaya animasi restart
+                        void row.offsetWidth;
+                        row.classList.add('lkm-hit');
+                        row.addEventListener('animationend', () => row.classList.remove('lkm-hit'), { once: true });
+                    }
+                });
+                toast(`⚡ ${hitIds.size} key baru saja dipakai.`, 'info', 2500);
+            }
+        }
+
+        el('lkmRefreshBtn').addEventListener('click', () => {
+            lkmRender();
+        });
+
+        /* ============================================================
+           DONUT CHART — INJECTED KE SCAN RESULT VT
+           buildDonutForVT(attrs) → HTML string berisi canvas + legend
+           dipanggil dari buildScanResultCard saat ada data VT.
+           ============================================================ */
+        const donutRegistry = {};   // {canvasId: Chart instance}
+
+        function buildVTDonut(stats) {
+            // stats = last_analysis_stats dari attrs VT
+            const mal  = stats.malicious   || 0;
+            const sus  = stats.suspicious  || 0;
+            const und  = stats.undetected  || 0;
+            const hrm  = stats.harmless    || 0;
+            const tout = stats.timeout     || 0;
+            const total = mal + sus + und + hrm + tout;
+            if (total === 0) return '';
+
+            const canvasId = 'donut_' + Math.random().toString(36).slice(2, 9);
+
+            // Inject Chart.js setelah DOM insert (requestAnimationFrame)
+            requestAnimationFrame(() => {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+                // Destroy instance lama jika ada (re-render)
+                if (donutRegistry[canvasId]) { donutRegistry[canvasId].destroy(); }
+                donutRegistry[canvasId] = new Chart(canvas, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Malicious', 'Suspicious', 'Undetected', 'Harmless', 'Timeout'],
+                        datasets: [{
+                            data: [mal, sus, und, hrm, tout],
+                            backgroundColor: [
+                                'rgba(208,59,59,.9)',
+                                'rgba(250,178,25,.9)',
+                                'rgba(92,107,135,.6)',
+                                'rgba(12,163,12,.75)',
+                                'rgba(92,107,135,.35)',
+                            ],
+                            borderColor: 'transparent',
+                            borderWidth: 0,
+                            hoverOffset: 4,
+                        }],
+                    },
+                    options: {
+                        cutout: '70%',
+                        responsive: false,
+                        animation: { duration: 600 },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => ` ${ctx.label}: ${ctx.raw} (${((ctx.raw/total)*100).toFixed(1)}%)`,
+                                },
+                            },
+                        },
+                    },
+                });
+            });
+
+            const pct = v => total > 0 ? ((v/total)*100).toFixed(0) + '%' : '0%';
+
+            return `
+            <div class="scan-donut-wrap">
+                <canvas id="${canvasId}" class="scan-donut-canvas" width="88" height="88"></canvas>
+                <div>
+                    <div style="font-size:.72rem;color:var(--ink-3);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">
+                        Engine Analysis — ${fmtNum(total)} engine
+                    </div>
+                    <div class="scan-donut-legend">
+                        <div class="sdl-item"><span class="sdl-dot" style="background:#d03b3b;"></span><span class="sdl-count">${mal}</span><span class="sdl-label">Malicious (${pct(mal)})</span></div>
+                        <div class="sdl-item"><span class="sdl-dot" style="background:#fab219;"></span><span class="sdl-count">${sus}</span><span class="sdl-label">Suspicious (${pct(sus)})</span></div>
+                        <div class="sdl-item"><span class="sdl-dot" style="background:rgba(92,107,135,.6);"></span><span class="sdl-count">${und}</span><span class="sdl-label">Undetected (${pct(und)})</span></div>
+                        <div class="sdl-item"><span class="sdl-dot" style="background:#0ca30c;"></span><span class="sdl-count">${hrm}</span><span class="sdl-label">Harmless (${pct(hrm)})</span></div>
+                        ${tout > 0 ? `<div class="sdl-item"><span class="sdl-dot" style="background:rgba(92,107,135,.35);"></span><span class="sdl-count">${tout}</span><span class="sdl-label">Timeout (${pct(tout)})</span></div>` : ''}
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        /* Patch buildScanResultCard untuk inject donut chart di source box VirusTotal */
+        const _origBuildAnalysisBox = buildAnalysisBox;
+        function buildAnalysisBox(analysis, raw) {
+            const html = _origBuildAnalysisBox(analysis, raw);
+            const attrs = vtAttrs(raw);
+            const stats = attrs && attrs.last_analysis_stats;
+            if (!stats) return html;
+            const donut = buildVTDonut(stats);
+            if (!donut) return html;
+            // Inject donut sebelum analysis-grid
+            return html.replace('<div class="analysis-grid">', donut + '<div class="analysis-grid">');
+        }
     </script>
 
 </body>

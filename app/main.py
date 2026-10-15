@@ -17,8 +17,8 @@ import uvicorn
 import os
 
 app = FastAPI(
-    title="VT Proxy Balancer",
-    description="Multi-key VirusTotal API proxy with load balancing",
+    title="Threat Intelligence MTM",
+    description="Multi-source threat intelligence proxy with load balancing",
     version="1.0.0"
 )
 
