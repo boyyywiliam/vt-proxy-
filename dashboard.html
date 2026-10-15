@@ -2505,37 +2505,81 @@
             flex-wrap: wrap;
         }
 
-        .bulk-item {
-            background: var(--surface-1);
-            border: 1px solid var(--border);
-            border-radius: var(--r2);
-            margin-bottom: var(--s2);
-            transition: border-color var(--t), background var(--t);
-            overflow: hidden;
+        /* ============================================================
+           BULK SCAN — TABLE DATA-GRID (expand per baris)
+           ============================================================ */
+        .bulk-grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .8rem;
         }
 
-        .bulk-item:hover {
-            border-color: var(--border-strong);
+        .bulk-grid-table thead tr {
+            border-bottom: 1px solid var(--border);
         }
 
-        .bulk-item-head {
-            display: flex;
-            align-items: center;
-            gap: var(--s3);
-            padding: var(--s3) var(--s4);
+        .bulk-grid-table thead th {
+            padding: 8px 12px;
+            text-align: left;
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            color: var(--ink-4);
+            white-space: nowrap;
+        }
+
+        .bulk-row-main {
             cursor: pointer;
+            transition: background var(--t);
+            border-bottom: 1px solid var(--border);
         }
 
-        .bulk-item-head .bi-main {
-            flex: 1;
-            min-width: 0;
+        .bulk-row-main:hover {
+            background: var(--surface-2);
         }
 
-        .bulk-item-input {
+        .bulk-row-main.is-expanded {
+            background: var(--surface-2);
+            border-bottom: none;
+        }
+
+        .bulk-row-main td {
+            padding: 8px 12px;
+            vertical-align: middle;
+        }
+
+        .bulk-row-detail {
+            display: none;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .bulk-row-detail.is-open {
+            display: table-row;
+        }
+
+        .bulk-row-detail td {
+            padding: 16px 20px;
+            background: var(--surface-2);
+        }
+
+        .bulk-row-expand-icon {
+            color: var(--ink-4);
+            font-size: .78rem;
+            transition: transform var(--t);
+        }
+
+        .bulk-row-main.is-expanded .bulk-row-expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .bulk-input-mono {
             font-family: var(--mono);
-            font-size: .76rem;
+            font-size: .73rem;
             color: #b9cdf0;
             word-break: break-all;
+            max-width: 220px;
+            display: block;
         }
 
         .bulk-mini {
@@ -2544,28 +2588,6 @@
             gap: 6px;
             flex-wrap: wrap;
             margin-top: 6px;
-        }
-
-        .bulk-item .expand-icon {
-            color: var(--ink-4);
-            font-size: .8rem;
-            transition: transform var(--t);
-            flex-shrink: 0;
-        }
-
-        .bulk-item.expanded .expand-icon {
-            transform: rotate(180deg);
-        }
-
-        .bulk-item-detail {
-            display: none;
-            padding: 0 var(--s4) var(--s4);
-            border-top: 1px solid var(--border);
-        }
-
-        .bulk-item.expanded .bulk-item-detail {
-            display: block;
-            padding-top: var(--s4);
         }
 
         /* ============================================================
@@ -5500,8 +5522,6 @@
         }
 
         async function doBulkScan() {
-            // type is now auto-detected per item — no dropdown needed
-            const _unusedType = 'auto';
             const items = parseBulkInput();
             if (items.length === 0) {
                 toast('Masukkan minimal 1 item untuk di-scan.', 'err');
@@ -5516,9 +5536,27 @@
             btn.innerHTML = `<i class="bi bi-arrow-repeat spin"></i> Scanning…`;
             el('bulkProgress').hidden = false;
             el('bulkCounter').hidden = false;
-            results.innerHTML = '';
             state.bulk = [];
 
+            // Build table structure once
+            results.innerHTML = `
+                <div class="table-wrap" style="border-radius:var(--r2);overflow:hidden;">
+                    <table class="bulk-grid-table" id="bulkGridTable">
+                        <thead><tr>
+                            <th style="width:36px;">#</th>
+                            <th>Input</th>
+                            <th style="width:90px;">Type</th>
+                            <th style="width:130px;">Verdict</th>
+                            <th style="width:120px;">Action</th>
+                            <th style="width:80px;text-align:center;">Conf</th>
+                            <th style="width:70px;text-align:center;">Status</th>
+                            <th style="width:36px;"></th>
+                        </tr></thead>
+                        <tbody id="bulkGridBody"></tbody>
+                    </table>
+                </div>`;
+
+            const tbody = el('bulkGridBody');
             let okCount = 0, errCount = 0;
 
             for (let i = 0; i < items.length; i++) {
@@ -5546,31 +5584,57 @@
 
                 const detectedType = (status === 'success' && data.input_type) ? data.input_type : detectScanType(item) || 'hash';
                 const finalVerdict = status === 'success' ? (data.final?.verdict || 'UNKNOWN') : 'ERROR';
+                const finalConf    = status === 'success' ? (data.final?.confidence || 0) : 0;
+                const finalRec     = status === 'success' ? (data.final?.recommendation || '—') : '—';
                 state.bulk.push({ input: item, scan_type: detectedType, status, final: data.final, data });
 
-                // Simpan raw JSON response ke store untuk tombol JSON per-item
-                const raw = status === 'success' ? data : { error: data.error, input: item };
                 const jid = 'bj' + i + Math.random().toString(36).slice(2, 6);
-                jsonStore.set(jid, raw);
+                jsonStore.set(jid, status === 'success' ? data : { error: data.error, input: item });
 
                 const detail = status === 'success'
-                    ? `${buildMultiReport(data)}`
+                    ? buildMultiReport(data)
                     : `<div class="banner banner-err"><i class="bi bi-exclamation-octagon"></i><span>${escapeHtml(data.error)}</span></div>`;
 
-                results.insertAdjacentHTML('beforeend', `
-                    <div class="bulk-item">
-                        <div class="bulk-item-head">
-                            <div class="bi-main">
-                                <div class="bulk-item-input">${escapeHtml(item)}</div>
-                                ${status === 'success' ? buildBulkMini(data.final, data) : ''}
-                            </div>
-                            <span class="pill ${status === 'success' ? 'pill-ok' : 'pill-crit'}">
+                const rowId = `brow-${i}`;
+                const detRowId = `bdet-${i}`;
+
+                // Verdict color
+                const vTone = { MALICIOUS:'pill-crit', SUSPICIOUS:'pill-warn', CLEAN:'pill-ok', UNKNOWN:'pill-none', ERROR:'pill-crit' };
+                const recTone = finalVerdict === 'MALICIOUS' ? 'pill-crit' : finalVerdict === 'SUSPICIOUS' ? 'pill-warn' : finalVerdict === 'CLEAN' ? 'pill-ok' : 'pill-none';
+
+                const confColor = finalConf >= 70 ? (finalVerdict === 'CLEAN' ? 'var(--st-ok)' : 'var(--st-crit)') : finalConf >= 40 ? 'var(--st-warn)' : 'var(--ink-3)';
+
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr class="bulk-row-main" id="${rowId}" data-det="${detRowId}">
+                        <td style="color:var(--ink-4);font-size:.72rem;">${i + 1}</td>
+                        <td>
+                            <span class="bulk-input-mono">${escapeHtml(item.length > 60 ? item.slice(0,57)+'…' : item)}</span>
+                        </td>
+                        <td>${typeChip(detectedType)}</td>
+                        <td>${verdictBadge(finalVerdict)}</td>
+                        <td><span class="pill ${recTone}" style="font-size:.7rem;">${escapeHtml(finalRec.length > 16 ? finalRec.slice(0,15)+'…' : finalRec)}</span></td>
+                        <td style="text-align:center;">
+                            <span style="font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums;color:${confColor};">${finalConf}%</span>
+                        </td>
+                        <td style="text-align:center;">
+                            <span class="pill ${status === 'success' ? 'pill-ok' : 'pill-crit'}" style="font-size:.68rem;">
                                 <span class="pdot"></span>${status === 'success' ? 'OK' : 'Gagal'}
                             </span>
-                            <i class="bi bi-chevron-down expand-icon"></i>
-                        </div>
-                        <div class="bulk-item-detail">${detail}</div>
-                    </div>`);
+                        </td>
+                        <td style="text-align:center;">
+                            <i class="bi bi-chevron-down bulk-row-expand-icon"></i>
+                        </td>
+                    </tr>
+                    <tr class="bulk-row-detail" id="${detRowId}">
+                        <td colspan="8">${detail}</td>
+                    </tr>`);
+
+                // Wire click to expand
+                tbody.querySelector(`#${rowId}`).addEventListener('click', function() {
+                    const detRow = el(detRowId);
+                    const isOpen = detRow.classList.toggle('is-open');
+                    this.classList.toggle('is-expanded', isOpen);
+                });
             }
 
             el('bulkProgressLabel').textContent = `Selesai — ${okCount} berhasil, ${errCount} gagal`;

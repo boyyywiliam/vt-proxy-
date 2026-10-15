@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-#  deploy.sh — VT Proxy Balancer (Ubuntu 24.04, SQLite, systemd)
+#  deploy.sh — Threat Intelligence MTM (Ubuntu 24.04, SQLite, systemd)
 #  Author   : Dailam (Tugas Akhir / Internal Threat Hunting Tool)
 #  Usage    : sudo bash deploy.sh [install|update|status|logs|restart|stop]
 #
@@ -226,7 +226,7 @@ setup_systemd() {
 
     cat > "$SERVICE_FILE" <<SVCEOF
 [Unit]
-Description=VT Proxy Balancer -- Threat Hunting Tool
+Description=Threat Intelligence MTM -- Internal SOC Threat Hunting Tool
 After=network-online.target
 Wants=network-online.target
 
@@ -309,7 +309,7 @@ print_summary() {
 
     echo -e "${GREEN}${BOLD}"
     echo "  +-------------------------------------------------+"
-    echo "  |          VT PROXY BALANCER -- LIVE!            |"
+    echo "  |       THREAT INTELLIGENCE MTM -- LIVE!         |"
     echo "  +-------------------------------------------------+"
     echo "  |  API    : http://${SERVER_IP}:${APP_PORT}              |"
     echo "  |  Health : http://${SERVER_IP}:${APP_PORT}/health        |"
@@ -323,7 +323,7 @@ print_summary() {
     echo "  +-------------------------------------------------+"
     echo -e "${NC}"
 
-    warn "Jangan lupa tambahkan API key VT di dashboard!"
+    warn "Jangan lupa tambahkan API key di dashboard Threat Intelligence MTM!"
     warn "Buka dashboard.html di browser, arahkan API ke: http://${SERVER_IP}:${APP_PORT}"
 }
 
@@ -332,7 +332,7 @@ print_summary() {
 # =============================================================================
 cmd_update() {
     validate_config
-    header "Update VT Proxy dari GitHub"
+    header "Update Threat Intelligence MTM dari GitHub"
     deploy_code
     setup_venv
     setup_permissions
@@ -348,7 +348,7 @@ COMMAND="${1:-install}"
 case "$COMMAND" in
     install)
         validate_config
-        header "VT Proxy Balancer -- Fresh Install"
+        header "Threat Intelligence MTM -- Fresh Install"
         install_system_deps
         create_app_user
         deploy_code
