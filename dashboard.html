@@ -1539,12 +1539,74 @@
 
         .msr-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
-            /* start, bukan stretch: box "tidak dipanggil" isinya cuma satu baris,
-               kalau diregangkan setinggi box VirusTotal jadi banyak ruang kosong. */
-            align-items: start;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            align-items: stretch;
             gap: var(--s4);
             margin-bottom: var(--s4);
+        }
+
+        /* Strip ringkas untuk sumber intel yang tidak relevan dengan tipe input */
+        .msr-skipped-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--s3);
+            padding: 9px 16px;
+            margin-bottom: var(--s4);
+            border-radius: var(--r2);
+            background: rgba(148, 163, 184, 0.04);
+            border: 1px dashed var(--border-strong);
+            flex-wrap: wrap;
+        }
+
+        .mss-header {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: .74rem;
+            color: var(--ink-3);
+            font-weight: 500;
+        }
+
+        .mss-header i {
+            color: var(--ink-4);
+            font-size: .85rem;
+        }
+
+        .mss-pills {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .mss-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: var(--r-pill);
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            font-size: .7rem;
+            color: var(--ink-3);
+        }
+
+        .mss-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .mss-name {
+            font-weight: 600;
+            color: var(--ink-2);
+        }
+
+        .mss-reason {
+            color: var(--ink-4);
+            font-size: .67rem;
         }
 
         .msr-divider {
@@ -1574,6 +1636,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            height: 100%;
             transition: border-color var(--t), transform var(--t);
         }
 
@@ -1724,6 +1787,7 @@
             font-size: .66rem;
             color: var(--ink-4);
             flex-wrap: wrap;
+            margin-top: auto;
         }
 
         /* ===== FINAL VERDICT ===== */
@@ -5428,7 +5492,32 @@
                 </div>
             </div>`;
 
-            const boxes = `<div class="msr-grid">${sources.map(buildSourceBox).join('')}</div>`;
+            // Pisahkan sumber yang dipanggil vs yang di-skip agar tidak meninggalkan dead space di grid
+            const activeSources = sources.filter(s => s.status !== 'skipped');
+            const skippedSources = sources.filter(s => s.status === 'skipped');
+
+            // Jika semua di-skip (fallback), tampilkan semua di grid; jika ada active, hanya tampilkan active
+            const gridSources = activeSources.length ? activeSources : sources;
+            const boxes = `<div class="msr-grid">${gridSources.map(buildSourceBox).join('')}</div>`;
+
+            // Tampilkan sumber yang di-skip dalam strip ringkas horizontal
+            const skippedStrip = (activeSources.length && skippedSources.length) ? `
+                <div class="msr-skipped-strip">
+                    <div class="mss-header">
+                        <i class="bi bi-info-circle"></i>
+                        <span>Sumber yang tidak dipanggil untuk tipe <strong>${escapeHtml(data.input_type_label || t.label)}</strong>:</span>
+                    </div>
+                    <div class="mss-pills">
+                        ${skippedSources.map(s => {
+                            const m = srcMeta(s.source);
+                            return `<div class="mss-pill">
+                                <span class="mss-dot" style="background:${m.color}"></span>
+                                <span class="mss-name">${escapeHtml(m.label)}</span>
+                                <span class="mss-reason">(${escapeHtml(s.reason || 'tidak dipanggil')})</span>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>` : '';
 
             // Analisa VirusTotal versi lengkap (SOC panel, TTP, sandbox, community votes)
             const vt = sources.find(s => s.source === 'virustotal' && s.status === 'ok');
@@ -5450,7 +5539,7 @@
                     `${s.source}-${data.input_type}-${stamped}-${stamp()}`
                 )).join('');
 
-            return header + boxes + buildFinalBox(data.final) + deepVT + rawTitle + rawPanels;
+            return header + boxes + skippedStrip + buildFinalBox(data.final) + deepVT + rawTitle + rawPanels;
         }
 
         /* ============================================================
